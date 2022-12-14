@@ -6,3 +6,6 @@ tqdm
 matplotlib
 imageio
 plotly_express
+
+gpytorch
+seaborn
