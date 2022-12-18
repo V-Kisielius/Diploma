@@ -1,2 +1,12 @@
 Problem 1:
     bound integral and f_abs_integral are zeros
+
+Goals:
+1. Find out about itemizing the markdown cells
+2. 4d approach with appending the time dimension
+3. Check data_3d for correctness
+4. Think about powers of f in integrals. Why in bound integral we use .pow(2)?
+5. Including BOUND_THRASHOLD in the model. In forward or in train? How do i need to change a loss? Mb minimizing the 'bad' pixels number?
+6. Use masking in dataset for loss computation. Masks vs. np.where
+7. Searching for the optimum radius
+8. Appending loss computation to researching of range
