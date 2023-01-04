@@ -2,5 +2,3 @@ __pycache__/
 .venv
 .vscode
 all/
-.gitignore
-all.ipynb
