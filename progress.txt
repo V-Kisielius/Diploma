@@ -8,6 +8,7 @@ Goals:
 7. Searching for the optimum radius - night tests
 8. Appending loss computation to researching of range
 9. How to plot f(x, y)?
+10. Dropouts in the model
 
 Questions:
 1. Find out about itemizing the markdown cells
@@ -18,4 +19,6 @@ Questions:
 
 Спроекцировать цилиндр на более маленький
 НАгенерить датасет картинок
-Прогнать все карты через алгоритм
+
+
+
