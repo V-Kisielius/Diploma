@@ -9,6 +9,7 @@ Goals:
 8. Appending loss computation to researching of range
 9. How to plot f(x, y)?
 10. Dropouts in the model
+11. 2d plot  for opt radius. x = radius, y = img shape, color = min_distance
 
 Questions:
 1. Find out about itemizing the markdown cells

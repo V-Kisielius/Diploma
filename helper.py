@@ -25,7 +25,6 @@ def downscale_map(img_array, sq_size):
     return final_result
 
 def split_map(path, x_parts, scale_coef, color, need_plot=False):
-
     img = np.array(ImageOps.grayscale(Image.open(path))).astype(int)
     width, height = img.shape
     
