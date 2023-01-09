@@ -4,28 +4,23 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import plotly_express as px
 from PIL import Image, ImageOps
-import glob
-
-from config import PATH_TO_PM_DATA, PATH_TO_MARKUP_DATA
+from synmap import SynopticMap
 
 class MyData(torch.utils.data.Dataset):
-    def __init__(self, path_to_file, mode, mode_3d, radius, reduce_fctor=1, need_help=False, need_info=False):
-        self.need_help = need_help
+    def __init__(self, path_or_img, data_mode, mode_3d, radius, reduce_fctor=1, need_info=False):
         self.mode_3d = mode_3d
         self.radius = radius
-        self.maps_markup = self.make_markup()
-        self.pm_list = self.get_pm_list()
         self.reduce_factor = reduce_fctor
-        if mode == 'img':
-            self.map_number = ''
-            self.img_array = self.get_img_array(path_to_file) 
-        elif mode == 'abz':
-            self.map_number = path_to_file[-11:-7]
-            self.img_array, self.help_array = self.read_from_abz(path_to_file)
-        else:
-            self.map_number = ''
-            self.img_array = path_to_file
-        
+        match data_mode:
+            case 'img':
+                self.map_number = '1'
+                self.img_array = path_or_img
+            case 'abz':
+                self.smap = SynopticMap(path_or_img)
+                self.img_array = self.smap.filaments
+                self.map_number = self.smap.map_number
+            case _:
+                raise ValueError('data_mode must be "img" or "abz"')
         self.width, self.height = self.img_array.shape
         self.total_pixel = self.width * self.height
 
@@ -53,15 +48,6 @@ class MyData(torch.utils.data.Dataset):
     def get_img_array(self, path_to_file):
         return np.array(ImageOps.grayscale(Image.open(path_to_file))).astype(int)
         
-    def get_pm_list(self):
-        filenames = [filename for filename in glob.glob(f'{PATH_TO_PM_DATA}/*.dat')]
-        pm_list = []
-        for filename in filenames:
-            with open(filename) as f:
-                lines = [line[4:].replace('-1', '0').replace('+1', '1').rstrip() for line in f]
-            pm_list.append(np.array([list(x) for x in lines], dtype = 'int'))
-        return pm_list
-
     def _add_grad_label(self):
         tmp = self.img_array / self.img_array.max()
 
@@ -77,83 +63,12 @@ class MyData(torch.utils.data.Dataset):
         result = left_shift + right_shift + down_shift + up_shift - 4 * tmp
         result = np.zeros(self.img_array.shape) != result
         return result.astype(int)
-
-    def show_pm_list(self):
-        plt.figure(figsize=(20, 30))
-        maps_number = len(self.pm_list)
-        for i in range(maps_number):
-            plt.subplot(maps_number /  5, 5, i + 1) if maps_number % 5 == 0 else plt.subplot(maps_number // 5 + 1, 5, i + 1)
-            plt.title(f'Map №{1904 + i}')
-            plt.gca().axes.get_xaxis().set_visible(False)
-            plt.gca().axes.get_yaxis().set_visible(False)
-            plt.imshow(self.pm_list[i], cmap='gray')
-        plt.show()
-            
-    def make_markup(self):
-        res = {}
-        current = 0
-        with open(PATH_TO_MARKUP_DATA, 'r', encoding='windows-1251') as file:
-            for line in file:
-                try:
-                    temp = list(map(int, line.rstrip().split()))
-                except:
-                    continue
-                if len(temp) == 1:
-                    current = temp[0]
-                elif len(temp) == 0:
-                    continue
-                else:
-                    if current not in res.keys():
-                        res[current] = [temp[1:]] 
-                    else:
-                        res[current].append(temp[1:])
-        return res
         
     def show_image(self):
         plt.figure(figsize=(10, 5))
         plt.title(f'Input Image №{self.map_number}')
         plt.imshow(self.img_array, cmap='gray', vmin=0, vmax=255)
     
-    def read_from_abz(self, filename):
-        with open(filename) as f:
-            lines = [line.rstrip() for line in f]
-        my_shape = [int(x) for x in lines[0].split()[-6:-4]]
-        my_shape.reverse()
-        width, height = my_shape[0], my_shape[1]
-        img_array = np.full(shape=my_shape, fill_value=255)
-        for line in lines[3:]:
-            line = [int(x) for x in line.split()]
-            if len(line) == 3:
-                y = line[0]
-                x1 = line[1]
-                x2 = -line[2]
-                for i in range(x1, x2 + 1):
-                    img_array[min(y, width - 1), min(i, height - 1)] = 0
-            elif len(line) == 5:
-                y = line[0]
-                x1 = line[1]
-                x2 = -line[2]
-                x3 = line[3]
-                x4 = -line[4]
-                for i in range(x1, x2 + 1):
-                    img_array[min(y, width - 1), min(i, height - 1)] = 0
-                for i in range(x3, x4 + 1):
-                    img_array[min(y, width - 1), min(i, height - 1)] = 0
-        if self.need_help:
-            map_number = int(filename[-11:-7])
-            i = 10
-            help_array = np.full(shape=my_shape, fill_value=255)
-            for line in self.maps_markup[map_number]:    
-                for el in line:
-                    x, y = int(el * (width - 1) / 180.), int(i * (height - 1) / 360.)
-                    
-                    lx, rx = max(0, x - 3), min(width - 1, x + 3)
-                    ly, ry = max(0, y - 3), min(height - 1, y + 3)
-
-                    help_array[lx:rx, ly:ry] = 0
-                i += 10
-        return img_array, help_array if self.need_help else img_array
-
     def show_3d_static(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
