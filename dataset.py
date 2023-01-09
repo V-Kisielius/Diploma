@@ -146,11 +146,11 @@ class MyData(torch.utils.data.Dataset):
             for line in self.maps_markup[map_number]:    
                 for el in line:
                     x, y = int(el * (width - 1) / 180.), int(i * (height - 1) / 360.)
-                    help_array[x, y] = 0
-                    # help_array[min(x + 1, width - 1), y] = 0
-                    # help_array[max(x - 1, 0), y] = 0
-                    # help_array[x, min(y + 1, height - 1)] = 0
-                    # help_array[x, max(y - 1, 0)] = 0
+                    
+                    lx, rx = max(0, x - 3), min(width - 1, x + 3)
+                    ly, ry = max(0, y - 3), min(height - 1, y + 3)
+
+                    help_array[lx:rx, ly:ry] = 0
                 i += 10
         return img_array, help_array if self.need_help else img_array
 
