@@ -1,9 +1,10 @@
 import torch
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 import plotly_express as px
 from PIL import Image, ImageOps
+
 from synmap import SynopticMap
 
 class MyData(torch.utils.data.Dataset):
@@ -19,8 +20,11 @@ class MyData(torch.utils.data.Dataset):
                 self.smap = SynopticMap(path_or_img)
                 self.img_array = self.smap.filaments
                 self.map_number = self.smap.map_number
+            case 'path':
+                self.map_number = '1'
+                self.img_array = self.get_img_array(path_or_img)
             case _:
-                raise ValueError('data_mode must be "img" or "abz"')
+                raise ValueError('data_mode must be "img" | "abz" | "path"')
         self.width, self.height = self.img_array.shape
         self.total_pixel = self.width * self.height
 
