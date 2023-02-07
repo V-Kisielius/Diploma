@@ -7,7 +7,7 @@ IMG_SIZE = (50, 100)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class ExactGPModel(gpytorch.models.ExactGP):
-    def __init__(self, train_x, train_y, likelihood, ker_name, dimension=3, nu=1.5, lengthscale_constraint=None):
+    def __init__(self, train_x, train_y, likelihood, ker_name, dimension=3, nu=1.5, lengthscale_constraint=None, alpha_constraint=None):
         super(ExactGPModel, self).__init__(train_x, train_y, likelihood)
         self.likelihood = likelihood
         self.dim = dimension
@@ -15,9 +15,12 @@ class ExactGPModel(gpytorch.models.ExactGP):
         kernels = {
                 'RBF' : gpytorch.kernels.RBFKernel(ard_num_dims=self.dim, lengthscale_constraint=lengthscale_constraint),
                 'Matern' : gpytorch.kernels.MaternKernel(ard_num_dims=self.dim, nu=nu, lengthscale_constraint=lengthscale_constraint),
+                'RQ' : gpytorch.kernels.RQKernel(ard_num_dims=self.dim, lengthscale_constraint=lengthscale_constraint, alpha_constraint=alpha_constraint),
                    }
         self.kernel_name = ker_name
-        self.covar_module = gpytorch.kernels.ScaleKernel(kernels[self.kernel_name])
+        # self.covar_module = gpytorch.kernels.ScaleKernel(kernels[self.kernel_name])
+        self.covar_module = kernels[self.kernel_name]
+
 
     def forward(self, x):
         mean_x = self.mean_module(x)
@@ -42,21 +45,21 @@ class ExactGPModel(gpytorch.models.ExactGP):
             loss = -my_losss(output, train_y)
             loss.backward()
             history["loss"].append(loss.item())
-            lengthscale = self.covar_module.base_kernel.lengthscale.item() if self.dim == 1 else self.covar_module.base_kernel.lengthscale.mean().cpu().detach()
-            history["lengthscale"].append(lengthscale)
-            history["noise"].append(self.likelihood.noise.item())
+            # lengthscale = self.covar_module.base_kernel.lengthscale.item()
+            # history["lengthscale"].append(lengthscale)
+            # history["noise"].append(self.likelihood.noise.item())
             optimizer.step()
             
         if need_plot:
             self.plot_history(history)
 
     def plot_history(self, history):
-        _, ax = plt.subplots(1, 3, figsize=(20, 5))
-        for i, key in enumerate(history.keys()):
-            ax[i].plot(history[key])
-            ax[i].set_title(key)
-            ax[i].set_xlabel('Iteration')
-            ax[i].set_ylabel(key)
+        plt.figure(figsize=(10, 5))
+        plt.plot(history["loss"])
+        plt.title(f'Loss for {self.kernel_name} kernel')
+        plt.xlabel('Iteration')
+        plt.ylabel('Loss')
+        plt.show()
 
     def predict(self, data, need_plot=True):
         self.eval()
