@@ -24,7 +24,7 @@ class MyData(torch.utils.data.Dataset):
                 self.map_number = '1'
                 self.img_array = self.get_img_array(path_or_img)
             case _:
-                raise ValueError('data_mode must be "img" | "abz" | "path"')
+                raise ValueError('data_mode must be (\'img\' | \'abz\' | \'path\')')
         self.width, self.height = self.img_array.shape
         self.total_pixel = self.width * self.height
 
@@ -95,12 +95,12 @@ class MyData(torch.utils.data.Dataset):
         data_2d = torch.stack((x, y), dim=1)
         match mode_3d:
             case 'sphere':
-                z = x
+                z = torch.pi * x
                 x = torch.cos(torch.pi * y) * (1 - z.pow(2)).pow(0.5)
                 y = torch.sin(torch.pi * y) * (1 - z.pow(2)).pow(0.5)
                 data_3d = self.radius * torch.stack((x, y, z), dim=1)
             case 'cylinder':
-                z = x
+                z = torch.pi * x
                 x = torch.cos(torch.pi * y)
                 y = torch.sin(torch.pi * y)
                 data_3d = self.radius * torch.stack((x, y, z), dim=1)

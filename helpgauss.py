@@ -6,6 +6,9 @@ from tqdm import tqdm
 IMG_SIZE = (50, 100)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+def map_to_cylinder(points):
+    return torch.stack((torch.cos(2 * torch.pi * points[:, 1]), torch.sin(2 * torch.pi * points[:, 1]), points[:, 0]), -1)
+
 class ExactGPModel(gpytorch.models.ExactGP):
     def __init__(self, train_x, train_y, likelihood, ker_name, dimension=3, nu=1.5, lengthscale_constraint=None, alpha_constraint=None):
         super(ExactGPModel, self).__init__(train_x, train_y, likelihood)
@@ -18,8 +21,8 @@ class ExactGPModel(gpytorch.models.ExactGP):
                 'RQ' : gpytorch.kernels.RQKernel(ard_num_dims=self.dim, lengthscale_constraint=lengthscale_constraint, alpha_constraint=alpha_constraint),
                    }
         self.kernel_name = ker_name
-        # self.covar_module = gpytorch.kernels.ScaleKernel(kernels[self.kernel_name])
-        self.covar_module = kernels[self.kernel_name]
+        self.covar_module = gpytorch.kernels.ScaleKernel(kernels[self.kernel_name])
+        # self.covar_module = kernels[self.kernel_name]
 
 
     def forward(self, x):
@@ -33,7 +36,7 @@ class ExactGPModel(gpytorch.models.ExactGP):
         optimizer = torch.optim.Adam(self.parameters(), lr=0.1)  # Includes GaussianLikelihood parameters
 
         # "Loss" for GPs - the marginal log likelihood
-        my_losss = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self)
+        my_loss = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self)
 
         history = {"loss": [], 
                 "lengthscale": [],
@@ -42,7 +45,7 @@ class ExactGPModel(gpytorch.models.ExactGP):
         for _ in tqdm(range(num_iter), desc='Training'):
             optimizer.zero_grad()
             output = self(train_x)
-            loss = -my_losss(output, train_y)
+            loss = -my_loss(output, train_y)
             loss.backward()
             history["loss"].append(loss.item())
             # lengthscale = self.covar_module.base_kernel.lengthscale.item()
@@ -51,16 +54,13 @@ class ExactGPModel(gpytorch.models.ExactGP):
             optimizer.step()
             
         if need_plot:
-            self.plot_history(history)
-
-    def plot_history(self, history):
-        plt.figure(figsize=(10, 5))
-        plt.plot(history["loss"])
-        plt.title(f'Loss for {self.kernel_name} kernel')
-        plt.xlabel('Iteration')
-        plt.ylabel('Loss')
-        plt.show()
-
+            plt.figure(figsize=(10, 5))
+            plt.plot(history["loss"])
+            plt.title(f'Loss for {self.kernel_name} kernel')
+            plt.xlabel('Iteration')
+            plt.ylabel('Loss')
+            plt.show()
+        
     def predict(self, data, need_plot=True):
         self.eval()
         self.likelihood.eval()
@@ -68,7 +68,6 @@ class ExactGPModel(gpytorch.models.ExactGP):
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
             sampled_preds = self(data.to(device)).rsample(sample_shape=torch.Size((16,)))
 
-        # plot sampled_preds as a grid 4x4
         if need_plot:
             _, axs = plt.subplots(4, 4, figsize=(20, 10))
             plt.suptitle(f'Predictions for {self.kernel_name} kernel')
