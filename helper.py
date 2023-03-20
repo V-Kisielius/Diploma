@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
 
-def open_img_as_array(path_to_img: str) -> np.array:
+def open_img_as_array(path_to_img: str) -> np.ndarray:
     return np.array(ImageOps.grayscale(Image.open(path_to_img))).astype(int)
 
 def make_gif(path_to_imgs, path_to_save, gifname, fps=20):

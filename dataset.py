@@ -3,9 +3,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly_express as px
-from PIL import Image, ImageOps
 
 from synmap import SynopticMap
+from helper import open_img_as_array
 
 class MyData(torch.utils.data.Dataset):
     def __init__(self, path_or_img, data_mode, mode_3d, radius, reduce_fctor=1, need_info=False):
@@ -22,7 +22,7 @@ class MyData(torch.utils.data.Dataset):
                 self.map_number = self.smap.map_number
             case 'path':
                 self.map_number = '1'
-                self.img_array = self.get_img_array(path_or_img)
+                self.img_array = open_img_as_array(path_or_img)
             case _:
                 raise ValueError('data_mode must be (\'img\' | \'abz\' | \'path\')')
         self.width, self.height = self.img_array.shape
@@ -31,7 +31,7 @@ class MyData(torch.utils.data.Dataset):
         self.bound_mask = np.where(self.img_array.reshape(-1, 1) < 255)[0]
         self.bound_length = len(np.where(self.img_array.reshape(-1, 1) < 255)[0])
         self.mask = np.where(self.img_array.reshape(-1, 1) == 255)[0]
-        self.row_numbers = 1 * self.height
+        self.row_numbers = 5 * self.height
         # self.sign_mask = np.where((self._add_grad_label() * self.img_array).reshape(-1, 1) != 0)[0]
 
         self.data_2d, self.data_3d = self.make_data(mode_3d=self.mode_3d)
@@ -48,9 +48,6 @@ class MyData(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         return self.data_2d[idx], self.data_3d[idx]
-
-    def get_img_array(self, path_to_file):
-        return np.array(ImageOps.grayscale(Image.open(path_to_file))).astype(int)
         
     def _add_grad_label(self):
         tmp = self.img_array / self.img_array.max()
