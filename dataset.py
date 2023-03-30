@@ -9,9 +9,6 @@ from helper import open_img_as_array
 
 class MyData(torch.utils.data.Dataset):
     def __init__(self, path_or_img, data_mode, mode_3d, radius, reduce_fctor=1, need_info=False):
-        self.mode_3d = mode_3d
-        self.radius = radius
-        self.reduce_factor = reduce_fctor
         match data_mode:
             case 'img':
                 self.map_number = '1'
@@ -25,17 +22,23 @@ class MyData(torch.utils.data.Dataset):
                 self.img_array = open_img_as_array(path_or_img)
             case _:
                 raise ValueError('data_mode must be (\'img\' | \'abz\' | \'path\')')
+
         self.width, self.height = self.img_array.shape
         self.total_pixel = self.width * self.height
+        self.reduce_factor = reduce_fctor
 
-        self.bound_mask = np.where(self.img_array.reshape(-1, 1) < 255)[0]
-        self.bound_length = len(np.where(self.img_array.reshape(-1, 1) < 255)[0])
-        self.mask = np.where(self.img_array.reshape(-1, 1) == 255)[0]
+        self.mode_3d = mode_3d
+        self.radius = radius
+
+        self.mask = np.where(self.img_array.reshape(-1, 1) == self.img_array.max())[0]
+        self.bound_mask = np.where(self.img_array.reshape(-1, 1) < self.img_array.max())[0]
+        self.bound_length = len(np.where(self.img_array.reshape(-1, 1) < self.img_array.max())[0])
         self.row_numbers = 5 * self.height
         # self.sign_mask = np.where((self._add_grad_label() * self.img_array).reshape(-1, 1) != 0)[0]
 
         self.data_2d, self.data_3d = self.make_data(mode_3d=self.mode_3d)
         self.data_3d.x, self.data_3d.y, self.data_3d.z = self.data_3d.T
+        
         if need_info:
             print(f'width: {self.width}\n' +
                   f'height: {self.height}\n' +
@@ -68,7 +71,7 @@ class MyData(torch.utils.data.Dataset):
     def show_image(self):
         plt.figure(figsize=(10, 5))
         plt.title(f'Input Image №{self.map_number}')
-        plt.imshow(self.img_array, cmap='gray', vmin=0, vmax=255)
+        plt.imshow(self.img_array, cmap='gray')
     
     def show_3d_static(self):
         fig = plt.figure()
@@ -97,7 +100,7 @@ class MyData(torch.utils.data.Dataset):
                 y = torch.sin(torch.pi * y) * (1 - z.pow(2)).pow(0.5)
                 data_3d = self.radius * torch.stack((x, y, z), dim=1)
             case 'cylinder':
-                z = torch.pi * x
+                z = torch.pi * x * self.width / self.height
                 x = torch.cos(torch.pi * y)
                 y = torch.sin(torch.pi * y)
                 data_3d = self.radius * torch.stack((x, y, z), dim=1)

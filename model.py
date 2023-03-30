@@ -1,13 +1,16 @@
 import torch
 import torch.nn as nn
 import pandas as pd
+import numpy as np
 from matplotlib import pyplot as plt
 import plotly_express as px
 from itertools import islice
 import math
 import os
+from tqdm import tqdm
 import matplotlib.gridspec as gridspec
 from IPython.display import clear_output
+from sklearn.metrics import f1_score
 
 from config import device, PATH_TO_EPOCH_OUTS
 
@@ -26,7 +29,7 @@ class Net(nn.Module):
         self.lr = lr
         self.weight_decay = weight_decay
         self.optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
-        #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', verbose=True, patience=100)        
+        #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', verbose=True, patience=100)
         self.loss_dict = {'loss': [],
                           'f_abs_integral': [],
                           'bound_integral': [],
@@ -43,7 +46,39 @@ class Net(nn.Module):
         # output[res > BOUND_THRASHOLD] = 1
 
         return output
-    
+
+    def pretrain(self, img_size, num_epochs):
+        width, height = img_size
+        img = torch.zeros(img_size, device=device)
+        img[:img_size[0] // 10, :] = 1
+        img[-img_size[0] // 10:, :] = -1
+
+        data_2d = torch.from_numpy(np.stack(np.indices(img_size), axis=2).reshape(-1, 2)).float()
+        x, y = data_2d.T
+        x -= x.mean()
+        x /= x.abs().max()
+        y -= y.mean()
+        y /= y.abs().max()
+        data_2d = torch.stack((x, y), dim=1)
+
+        z = torch.pi * x * width / height
+        x = torch.cos(torch.pi * y)
+        y = torch.sin(torch.pi * y)
+        batch_list = [torch.stack((x, y, z), dim=1).to(device)]
+        self.train()
+        for _ in tqdm(range(1, int(num_epochs) + 1), desc='Pretraining'):
+            output_list = [self(batch) for batch in batch_list]
+            self.optimizer.zero_grad()
+            loss = sum([torch.nn.functional.mse_loss(output, img.view(-1, 1)) for output in output_list])
+            loss.backward(retain_graph=True)
+            self.optimizer.step()
+        mse = sum([torch.nn.functional.mse_loss(output, img.view(-1, 1)) for output in output_list])
+        print(f'Pretraining MSE: {mse.item()}')
+        plt.figure(figsize=(12, 6))
+        plt.title('Pretrained model output')
+        plt.imshow(output_list[0].view(img_size).detach().cpu(), cmap='PuOr')
+
+
     def compute_and_plot_gradient(self, input_list=None):
         batch_list = input_list if input_list is not None else self.data_list
         for batch in batch_list:
@@ -91,18 +126,55 @@ class Net(nn.Module):
                             'label': prediction_list[map_number].flatten()})
         return px.scatter_3d(df, x='x', y='y', z='z', color='label').update_traces(marker={'size': 2})
 
-    def test_model(self, input_list=None, need_plot=False):
+    def test_model(self, threshold, input_list=None, need_plot=False):
         input_list = input_list if input_list is not None else self.data_list
         with torch.no_grad():
             output_list = [self(input.to(device)).cpu().detach() for input in input_list]
         if need_plot:
-            plt.figure(figsize=(12, 6))
+            plt.figure(figsize=(10, 20))
             for (i, output), data in zip(enumerate(output_list), self.dataset_list):
-                plt.subplot(1, len(output_list), i + 1)
-                plt.title(f'Visualization of the function $f(x,y,z)$\n on input №{i + 1}')
-                plt.imshow(output.view(data.img_array.shape), cmap='PuOr', vmin=-1, vmax=1) 
-        return output_list
+                original = torch.from_numpy(data.img_array).clone()
+                prediction = output.view(data.img_array.shape).clone()
 
+                mask = original < 255
+                original[mask] = 0
+                original[~mask] = 1
+
+                plt.subplot(len(output_list) + 2, 1, i + 1)
+                plt.title('Original image')
+                plt.imshow(original, cmap='gray')
+
+                mask = prediction.abs() < threshold
+                prediction[mask] = 0
+                prediction[~mask] = 1
+
+                plt.subplot(len(output_list) + 2, 1, i + 2)
+                plt.title('Prediction')
+                plt.imshow(prediction, cmap='gray')
+                
+                f1 = f1_score(original.flatten(), prediction.flatten())
+                f2 = f1_score(1 - original.flatten(), 1 - prediction.flatten())
+                mse = torch.nn.functional.mse_loss(prediction, original)
+
+                plt.subplot(len(output_list) + 2, 1, i + 3)
+                plt.title(f'Visualization of the function $f(x,y,z)$\n on input №{i + 1}\nMSE = {mse}\nF1_1 = {f1}\nF1_2 = {f2}')
+                plt.imshow(output.view(data.img_array.shape), cmap='PuOr', vmin=-1, vmax=1) 
+
+        return output_list if input_list else output_list, mse, f1, f2
+
+    def test_model_(self, threshold):
+        with torch.no_grad():
+            original = torch.from_numpy(self.dataset_list[0].img_array).clone()
+            x = self.data_list[0].to(device)
+            prediction = self(x).cpu().detach().view(original.shape).clone()
+            for mask, img in zip([original < 255, prediction.abs() < threshold], [original, prediction]):
+                img[mask] = 0
+                img[~mask] = 1
+            f1 = f1_score(original.flatten(), prediction.flatten())
+            f2 = f1_score(1 - original.flatten(), 1 - prediction.flatten())
+            mse = torch.nn.functional.mse_loss(prediction, original)
+        return mse, f1, f2
+    
     def start_training(self, num_epochs, my_weight=1e-1, show_frequency=1e+2, need_plot=False, need_save=True):
         if need_save:
             os.makedirs(PATH_TO_EPOCH_OUTS, exist_ok=True)
