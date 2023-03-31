@@ -1,0 +1,1111 @@
+00001.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.37
+Random
+MSE: 0.08
+F1: 0.96, 0.35
+
+00002.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.45
+Random
+MSE: 0.08
+F1: 0.96, 0.38
+
+00003.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.35
+Random
+MSE: 0.07
+F1: 0.96, 0.43
+
+00004.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.38
+Random
+MSE: 0.10
+F1: 0.95, 0.34
+
+00005.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.34
+Random
+MSE: 0.08
+F1: 0.96, 0.41
+
+00006.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.42
+Random
+MSE: 0.08
+F1: 0.96, 0.39
+
+00007.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.37
+Random
+MSE: 0.08
+F1: 0.96, 0.41
+
+00008.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.05
+F1: 0.97, 0.54
+
+00009.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.44
+Random
+MSE: 0.08
+F1: 0.96, 0.41
+
+00010.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.41
+Random
+MSE: 0.07
+F1: 0.96, 0.43
+
+00011.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.30
+Random
+MSE: 0.06
+F1: 0.97, 0.45
+
+00012.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.42
+Random
+MSE: 0.06
+F1: 0.97, 0.46
+
+00013.png
+Pretrained
+MSE: 0.11
+F1: 0.94, 0.31
+Random
+MSE: 0.10
+F1: 0.94, 0.34
+
+00014.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.37
+Random
+MSE: 0.09
+F1: 0.95, 0.30
+
+00015.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.35
+Random
+MSE: 0.05
+F1: 0.98, 0.53
+
+00016.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.39
+Random
+MSE: 0.09
+F1: 0.95, 0.33
+
+00017.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.28
+Random
+MSE: 0.11
+F1: 0.94, 0.30
+
+00018.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.35
+Random
+MSE: 0.08
+F1: 0.96, 0.44
+
+00019.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.43
+Random
+MSE: 0.07
+F1: 0.96, 0.44
+
+00020.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.39
+Random
+MSE: 0.06
+F1: 0.97, 0.46
+
+00021.png
+Pretrained
+MSE: 0.11
+F1: 0.94, 0.34
+Random
+MSE: 0.09
+F1: 0.95, 0.40
+
+00022.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.11
+F1: 0.94, 0.24
+
+00023.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.51
+Random
+MSE: 0.09
+F1: 0.95, 0.36
+
+00024.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.42
+Random
+MSE: 0.10
+F1: 0.95, 0.29
+
+00025.png
+Pretrained
+MSE: 0.11
+F1: 0.94, 0.28
+Random
+MSE: 0.06
+F1: 0.97, 0.48
+
+00026.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.37
+Random
+MSE: 0.10
+F1: 0.94, 0.25
+
+00027.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.45
+Random
+MSE: 0.04
+F1: 0.98, 0.53
+
+00028.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.33
+Random
+MSE: 0.07
+F1: 0.96, 0.46
+
+00029.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.35
+Random
+MSE: 0.09
+F1: 0.95, 0.39
+
+00030.png
+Pretrained
+MSE: 0.11
+F1: 0.94, 0.29
+Random
+MSE: 0.09
+F1: 0.95, 0.33
+
+00031.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.10
+F1: 0.94, 0.22
+
+00032.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.50
+Random
+MSE: 0.08
+F1: 0.96, 0.38
+
+00033.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.41
+Random
+MSE: 0.12
+F1: 0.94, 0.27
+
+00034.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.41
+Random
+MSE: 0.08
+F1: 0.96, 0.39
+
+00035.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.46
+Random
+MSE: 0.05
+F1: 0.97, 0.53
+
+00036.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.44
+Random
+MSE: 0.07
+F1: 0.96, 0.44
+
+00037.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.50
+Random
+MSE: 0.07
+F1: 0.96, 0.44
+
+00038.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.32
+Random
+MSE: 0.06
+F1: 0.97, 0.44
+
+00039.png
+Pretrained
+MSE: 0.10
+F1: 0.94, 0.32
+Random
+MSE: 0.07
+F1: 0.96, 0.42
+
+00040.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.37
+Random
+MSE: 0.06
+F1: 0.97, 0.43
+
+00041.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.38
+Random
+MSE: 0.11
+F1: 0.94, 0.22
+
+00042.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.41
+Random
+MSE: 0.09
+F1: 0.95, 0.34
+
+00043.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.41
+Random
+MSE: 0.07
+F1: 0.96, 0.44
+
+00044.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.37
+Random
+MSE: 0.07
+F1: 0.96, 0.40
+
+00045.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.16
+Random
+MSE: 0.10
+F1: 0.95, 0.14
+
+00046.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.07
+F1: 0.96, 0.44
+
+00047.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.37
+Random
+MSE: 0.07
+F1: 0.96, 0.42
+
+00048.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.07
+F1: 0.96, 0.40
+
+00049.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.09
+F1: 0.95, 0.30
+
+00050.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.45
+Random
+MSE: 0.11
+F1: 0.94, 0.29
+
+00051.png
+Pretrained
+MSE: 0.07
+F1: 0.97, 0.47
+Random
+MSE: 0.08
+F1: 0.96, 0.37
+
+00052.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.42
+Random
+MSE: 0.09
+F1: 0.95, 0.32
+
+00053.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.49
+Random
+MSE: 0.05
+F1: 0.97, 0.53
+
+00054.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.39
+Random
+MSE: 0.10
+F1: 0.95, 0.19
+
+00055.png
+Pretrained
+MSE: 0.10
+F1: 0.94, 0.31
+Random
+MSE: 0.10
+F1: 0.95, 0.26
+
+00056.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.34
+Random
+MSE: 0.07
+F1: 0.96, 0.44
+
+00057.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.36
+Random
+MSE: 0.11
+F1: 0.94, 0.25
+
+00058.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.38
+Random
+MSE: 0.09
+F1: 0.95, 0.34
+
+00059.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.41
+Random
+MSE: 0.04
+F1: 0.98, 0.54
+
+00060.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.39
+Random
+MSE: 0.09
+F1: 0.95, 0.38
+
+00061.png
+Pretrained
+MSE: 0.04
+F1: 0.98, 0.55
+Random
+MSE: 0.08
+F1: 0.96, 0.38
+
+00062.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.41
+Random
+MSE: 0.09
+F1: 0.95, 0.32
+
+00063.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.35
+Random
+MSE: 0.09
+F1: 0.95, 0.34
+
+00064.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.36
+Random
+MSE: 0.09
+F1: 0.95, 0.35
+
+00065.png
+Pretrained
+MSE: 0.11
+F1: 0.94, 0.30
+Random
+MSE: 0.07
+F1: 0.96, 0.48
+
+00066.png
+Pretrained
+MSE: 0.10
+F1: 0.94, 0.31
+Random
+MSE: 0.11
+F1: 0.94, 0.27
+
+00067.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.40
+Random
+MSE: 0.07
+F1: 0.96, 0.46
+
+00068.png
+Pretrained
+MSE: 0.04
+F1: 0.98, 0.59
+Random
+MSE: 0.09
+F1: 0.95, 0.35
+
+00069.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.08
+F1: 0.96, 0.38
+
+00070.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.48
+Random
+MSE: 0.10
+F1: 0.95, 0.33
+
+00071.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.39
+Random
+MSE: 0.11
+F1: 0.94, 0.26
+
+00072.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.47
+Random
+MSE: 0.07
+F1: 0.96, 0.42
+
+00073.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.38
+Random
+MSE: 0.09
+F1: 0.95, 0.35
+
+00074.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.46
+Random
+MSE: 0.12
+F1: 0.94, 0.24
+
+00075.png
+Pretrained
+MSE: 0.12
+F1: 0.94, 0.29
+Random
+MSE: 0.11
+F1: 0.94, 0.31
+
+00076.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.37
+Random
+MSE: 0.12
+F1: 0.94, 0.27
+
+00077.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.39
+Random
+MSE: 0.06
+F1: 0.97, 0.46
+
+00078.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.34
+Random
+MSE: 0.08
+F1: 0.96, 0.39
+
+00079.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.10
+F1: 0.94, 0.32
+
+00080.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.36
+Random
+MSE: 0.09
+F1: 0.95, 0.38
+
+00081.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.37
+Random
+MSE: 0.09
+F1: 0.95, 0.31
+
+00082.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.47
+Random
+MSE: 0.08
+F1: 0.96, 0.40
+
+00083.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.41
+Random
+MSE: 0.08
+F1: 0.96, 0.39
+
+00084.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.39
+Random
+MSE: 0.06
+F1: 0.97, 0.50
+
+00085.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.33
+Random
+MSE: 0.10
+F1: 0.95, 0.30
+
+00086.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.47
+Random
+MSE: 0.08
+F1: 0.96, 0.44
+
+00087.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.45
+Random
+MSE: 0.09
+F1: 0.95, 0.38
+
+00088.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.36
+Random
+MSE: 0.08
+F1: 0.96, 0.38
+
+00089.png
+Pretrained
+MSE: 0.08
+F1: 0.95, 0.38
+Random
+MSE: 0.11
+F1: 0.94, 0.30
+
+00090.png
+Pretrained
+MSE: 0.05
+F1: 0.97, 0.49
+Random
+MSE: 0.06
+F1: 0.97, 0.43
+
+00091.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.07
+F1: 0.96, 0.42
+
+00092.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.41
+Random
+MSE: 0.12
+F1: 0.94, 0.25
+
+00093.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.33
+Random
+MSE: 0.12
+F1: 0.94, 0.27
+
+00094.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.42
+Random
+MSE: 0.06
+F1: 0.97, 0.48
+
+00095.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.07
+F1: 0.96, 0.38
+
+00096.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.36
+Random
+MSE: 0.12
+F1: 0.93, 0.25
+
+00097.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.40
+Random
+MSE: 0.10
+F1: 0.95, 0.31
+
+00098.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.32
+Random
+MSE: 0.09
+F1: 0.95, 0.33
+
+00099.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.44
+Random
+MSE: 0.07
+F1: 0.96, 0.41
+
+00100.png
+Pretrained
+MSE: 0.10
+F1: 0.94, 0.33
+Random
+MSE: 0.08
+F1: 0.96, 0.42
+
+00101.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.37
+Random
+MSE: 0.12
+F1: 0.94, 0.22
+
+00102.png
+Pretrained
+MSE: 0.08
+F1: 0.95, 0.40
+Random
+MSE: 0.09
+F1: 0.95, 0.36
+
+00103.png
+Pretrained
+MSE: 0.08
+F1: 0.95, 0.37
+Random
+MSE: 0.05
+F1: 0.97, 0.49
+
+00104.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.39
+Random
+MSE: 0.12
+F1: 0.94, 0.29
+
+00105.png
+Pretrained
+MSE: 0.03
+F1: 0.98, 0.62
+Random
+MSE: 0.09
+F1: 0.95, 0.31
+
+00106.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.35
+Random
+MSE: 0.12
+F1: 0.94, 0.28
+
+00107.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.36
+Random
+MSE: 0.07
+F1: 0.96, 0.47
+
+00108.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.49
+Random
+MSE: 0.07
+F1: 0.96, 0.42
+
+00109.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.37
+Random
+MSE: 0.09
+F1: 0.95, 0.35
+
+00110.png
+Pretrained
+MSE: 0.11
+F1: 0.94, 0.35
+Random
+MSE: 0.11
+F1: 0.94, 0.34
+
+00111.png
+Pretrained
+MSE: 0.12
+F1: 0.94, 0.31
+Random
+MSE: 0.11
+F1: 0.94, 0.30
+
+00112.png
+Pretrained
+MSE: 0.11
+F1: 0.94, 0.22
+Random
+MSE: 0.10
+F1: 0.95, 0.27
+
+00113.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.39
+Random
+MSE: 0.11
+F1: 0.94, 0.23
+
+00114.png
+Pretrained
+MSE: 0.08
+F1: 0.95, 0.41
+Random
+MSE: 0.09
+F1: 0.95, 0.24
+
+00115.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.44
+Random
+MSE: 0.08
+F1: 0.96, 0.40
+
+00116.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.36
+Random
+MSE: 0.11
+F1: 0.94, 0.30
+
+00117.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.35
+Random
+MSE: 0.10
+F1: 0.94, 0.30
+
+00118.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.35
+Random
+MSE: 0.06
+F1: 0.97, 0.48
+
+00119.png
+Pretrained
+MSE: 0.05
+F1: 0.97, 0.48
+Random
+MSE: 0.06
+F1: 0.97, 0.44
+
+00120.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.36
+Random
+MSE: 0.06
+F1: 0.97, 0.47
+
+00121.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.41
+Random
+MSE: 0.08
+F1: 0.95, 0.37
+
+00122.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.43
+Random
+MSE: 0.08
+F1: 0.96, 0.40
+
+00123.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.34
+Random
+MSE: 0.09
+F1: 0.95, 0.38
+
+00124.png
+Pretrained
+MSE: 0.11
+F1: 0.94, 0.28
+Random
+MSE: 0.09
+F1: 0.95, 0.39
+
+00125.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.43
+Random
+MSE: 0.11
+F1: 0.94, 0.27
+
+00126.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.41
+Random
+MSE: 0.11
+F1: 0.94, 0.27
+
+00127.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.42
+Random
+MSE: 0.08
+F1: 0.96, 0.40
+
+00128.png
+Pretrained
+MSE: 0.09
+F1: 0.95, 0.35
+Random
+MSE: 0.06
+F1: 0.97, 0.48
+
+00129.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.37
+Random
+MSE: 0.06
+F1: 0.97, 0.49
+
+00130.png
+Pretrained
+MSE: 0.07
+F1: 0.96, 0.46
+Random
+MSE: 0.07
+F1: 0.96, 0.44
+
+00131.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.49
+Random
+MSE: 0.09
+F1: 0.95, 0.34
+
+00132.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.39
+Random
+MSE: 0.07
+F1: 0.96, 0.46
+
+00133.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.33
+Random
+MSE: 0.08
+F1: 0.96, 0.36
+
+00134.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.40
+Random
+MSE: 0.08
+F1: 0.95, 0.34
+
+00135.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.37
+Random
+MSE: 0.05
+F1: 0.97, 0.49
+
+00136.png
+Pretrained
+MSE: 0.06
+F1: 0.97, 0.47
+Random
+MSE: 0.10
+F1: 0.95, 0.30
+
+00137.png
+Pretrained
+MSE: 0.08
+F1: 0.96, 0.42
+Random
+MSE: 0.08
+F1: 0.95, 0.38
+
+00138.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.32
+Random
+MSE: 0.05
+F1: 0.97, 0.54
+
+00139.png
+Pretrained
+MSE: 0.10
+F1: 0.95, 0.32
+Random
+MSE: 0.06
+F1: 0.97, 0.50

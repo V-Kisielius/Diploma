@@ -115,7 +115,7 @@ class Net(nn.Module):
         return model    
 
     def save_state_dict(self, path):
-        os.makedirs('./state_dict', exist_ok=True)
+        os.makedirs('/'.join(path.split('/')[:-1]), exist_ok=True)
         torch.save(self.state_dict(), path)
 
     def show_3d(self, prediction_list, map_number):
