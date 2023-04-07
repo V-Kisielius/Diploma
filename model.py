@@ -126,54 +126,50 @@ class Net(nn.Module):
                             'label': prediction_list[map_number].flatten()})
         return px.scatter_3d(df, x='x', y='y', z='z', color='label').update_traces(marker={'size': 2})
 
-    def test_model(self, threshold, input_list=None, need_plot=False):
+    def test_model(self, input_list=None, need_plot=False):
         input_list = input_list if input_list is not None else self.data_list
         with torch.no_grad():
             output_list = [self(input.to(device)).cpu().detach() for input in input_list]
-        if need_plot:
-            plt.figure(figsize=(10, 20))
-            for (i, output), data in zip(enumerate(output_list), self.dataset_list):
-                original = torch.from_numpy(data.img_array).clone()
-                prediction = output.view(data.img_array.shape).clone()
+        # if need_plot:
+        #     plt.figure(figsize=(10, 20))
+        #     for (i, output), data in zip(enumerate(output_list), self.dataset_list):
+        #         original = torch.from_numpy(data.img_array).clone()
+        #         prediction = output.view(data.img_array.shape).clone()
 
-                mask = original < 255
-                original[mask] = 0
-                original[~mask] = 1
+        #         mask = original < 255
+        #         original[mask] = 0
+        #         original[~mask] = 1
 
-                plt.subplot(len(output_list) + 2, 1, i + 1)
-                plt.title('Original image')
-                plt.imshow(original, cmap='gray')
+        #         plt.subplot(len(output_list) + 2, 1, i + 1)
+        #         plt.title('Original image')
+        #         plt.imshow(original, cmap='gray')
 
-                mask = prediction.abs() < threshold
-                prediction[mask] = 0
-                prediction[~mask] = 1
+        #         mask = prediction.abs() < threshold
+        #         prediction[mask] = 0
+        #         prediction[~mask] = 1
 
-                plt.subplot(len(output_list) + 2, 1, i + 2)
-                plt.title('Prediction')
-                plt.imshow(prediction, cmap='gray')
+        #         plt.subplot(len(output_list) + 2, 1, i + 2)
+        #         plt.title('Prediction')
+        #         plt.imshow(prediction, cmap='gray')
                 
-                f1 = f1_score(original.flatten(), prediction.flatten())
-                f2 = f1_score(1 - original.flatten(), 1 - prediction.flatten())
-                mse = torch.nn.functional.mse_loss(prediction, original)
+        #         f1 = f1_score(original.flatten(), prediction.flatten())
+        #         f2 = f1_score(1 - original.flatten(), 1 - prediction.flatten())
+        #         mse = torch.nn.functional.mse_loss(prediction, original)
 
-                plt.subplot(len(output_list) + 2, 1, i + 3)
-                plt.title(f'Visualization of the function $f(x,y,z)$\n on input №{i + 1}\nMSE = {mse}\nF1_1 = {f1}\nF1_2 = {f2}')
-                plt.imshow(output.view(data.img_array.shape), cmap='PuOr', vmin=-1, vmax=1) 
+        #         plt.subplot(len(output_list) + 2, 1, i + 3)
+        #         plt.title(f'Visualization of the function $f(x,y,z)$\n on input №{i + 1}\nMSE = {mse}\nF1_1 = {f1}\nF1_2 = {f2}')
+        #         plt.imshow(output.view(data.img_array.shape), cmap='PuOr', vmin=-1, vmax=1) 
 
-        return output_list if input_list else output_list, mse, f1, f2
+        return output_list # if input_list else output_list, mse, f1, f2
 
-    def test_model_(self, threshold):
+    def test_model_(self):
         with torch.no_grad():
             original = torch.from_numpy(self.dataset_list[0].img_array).clone()
             x = self.data_list[0].to(device)
             prediction = self(x).cpu().detach().view(original.shape).clone()
-            for mask, img in zip([original < 255, prediction.abs() < threshold], [original, prediction]):
-                img[mask] = 0
-                img[~mask] = 1
-            f1 = f1_score(original.flatten(), prediction.flatten())
-            f2 = f1_score(1 - original.flatten(), 1 - prediction.flatten())
+            prediction = (prediction > 0).float()
             mse = torch.nn.functional.mse_loss(prediction, original)
-        return mse, f1, f2
+        return mse
     
     def start_training(self, num_epochs, my_weight=1e-1, show_frequency=1e+2, need_plot=False, need_save=True):
         if need_save:

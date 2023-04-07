@@ -14,40 +14,59 @@ def make_gif(path_to_imgs, path_to_save, gifname, fps=20):
         images.append(imageio.imread(filename))
     imageio.mimsave(f'{path_to_save}/{gifname}.gif', images, format='gif', fps=fps)
 
-def downscale_map(img_array, sq_size):
-    width, height = img_array.shape
-    tmp_arr = img_array.copy()
-    if width % sq_size:
-        tmp_arr = np.r_[img_array, np.zeros((sq_size - width % sq_size, height))]
-        width, height = tmp_arr.shape
-    if height % sq_size:
-        tmp_arr = np.c_[tmp_arr, np.zeros((sq_size - height % sq_size, width)).T]
-        width, height = tmp_arr.shape
-    result = np.array([np.hsplit(u, height / sq_size) for u in np.vsplit(tmp_arr, width / sq_size)]).reshape((-1, sq_size, sq_size))
-    final_result = np.array([x.sum() for x in result]).reshape((width // sq_size, height // sq_size)) == 0
-    return final_result
+def downscale_map(img, sq_size) -> np.ndarray:
+    # img = (img - img.min()) / (img.max() - img.min())
+    img = np.array(img)
+    width, height = img.shape
+    x_parts = width // sq_size
+    y_parts = height // sq_size
+    downsampled = np.zeros((x_parts, y_parts))
+    for x in range(x_parts):
+        for y in range(y_parts):
+            downsampled[x, y] = (img[x*sq_size:(x+1)*sq_size, y*sq_size:(y+1)*sq_size] < img.max()).sum() == 0
+    plt.imshow(downsampled, cmap='gray')
+    return downsampled
 
 def split_map(path, x_parts, scale_coef, color, need_plot=False):
-    img = np.array(ImageOps.grayscale(Image.open(path))).astype(int)
+    img = open_img_as_array(path) if isinstance(path, str) else path
     width, height = img.shape
-    
-    if need_plot:
-        plt.figure(figsize=(20, 10))
-        plt.subplot(1, 2, 1)
-        plt.imshow(img, cmap='gray')
+    sq_size = width // x_parts
+    splitted = img.copy()
+    delta = int(scale_coef * sq_size / 2)
+    for x in range(sq_size // 2, width, sq_size):
+        for y in range(sq_size // 2, height, sq_size): 
+            shift = np.random.randint(-delta // 2, delta // 2, 2)
+            splitted[x+shift[0]-delta:x+shift[0]+delta, y+shift[1]-delta:y+shift[1]+delta] = color
+    return splitted
 
-    y_parts = int(x_parts * height / width)
-    dx = width // x_parts
-    dy = height // y_parts
-    delta = int(scale_coef * min(dx, dy) // 2)
-
-    for x in range(dx // 2, width, dx):
-        for y in range((1 + (x - dx // 2) // dx % 2) * dy // 2, height, dy):
-        # for y in range(dy // 2, height, dy):
-            img[x-delta:x+delta, y-delta:y+delta] = color
-    
+def prepare_gpr_results(img, x_parts=5, scale_coef=0.85, color=0, need_plot=False):
+    # img = samples[i]
+    # normalize to [-1, 1]
+    img = (img - img.min()) / (img.max() - img.min()) * 2 - 1
+    # print(img.min(), img.max())
+    # # img = (img - img.min()) / (img.max() - img.min()) * 255
+    sign = img > 0
+    # values of sign are True or False
+    # for every True value if at least one of its neighbours is False then it is a border
+    # find all borders and make a new array with the same shape as img where borders are True and others are False
+    original = np.zeros_like(img)
+    for x in range(1, img.shape[0]-1):
+        for y in range(1, img.shape[1]-1):
+            original[x, y] = sign[x, y] and (not sign[x-1, y] or not sign[x+1, y] or not sign[x, y-1] or not sign[x, y+1])
+    splitted = 1 - split_map(path=original, x_parts=x_parts, scale_coef=scale_coef, color=color, need_plot=False)
     if need_plot:
-        plt.subplot(1, 2, 2)
-        plt.imshow(img, cmap='gray')
-        print(f'width={width}\nheight={height}\nx_parts = {x_parts}\ny_parts = {y_parts}\ndelta = {delta}\ndx={dx}\ndy={dy}')
-    return img
+        plt.figure(figsize=(20, 5))
+        # original image
+        plt.subplot(1, 3, 1)
+        plt.imshow(1 - original, cmap='gray')
+        plt.title('Original')
+        # sign distribution
+        plt.subplot(1, 3, 2)
+        plt.imshow(sign, cmap='gray')
+        plt.title('Sign distribution')
+        # split map
+        plt.subplot(1, 3, 3)
+        plt.imshow(splitted, cmap='gray')
+        plt.title('Splitted')
+
+    return 1 - original, sign, splitted

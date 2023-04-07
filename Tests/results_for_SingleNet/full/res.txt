@@ -1,0 +1,600 @@
+sample 1:
+MAE_1: 0.02
+MAE_2: 0.08
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 2:
+MAE_1: 0.24
+MAE_2: 0.10
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 3:
+MAE_1: 0.10
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 4:
+MAE_1: 0.15
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 5:
+MAE_1: 0.09
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 6:
+MAE_1: 0.08
+MAE_2: 0.10
+MAE_3: 0.11
+MAE_4: 0.09
+
+sample 7:
+MAE_1: 0.06
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 8:
+MAE_1: 0.17
+MAE_2: 0.03
+MAE_3: 0.04
+MAE_4: 0.03
+
+sample 9:
+MAE_1: 0.06
+MAE_2: 0.02
+MAE_3: 0.03
+MAE_4: 0.02
+
+sample 10:
+MAE_1: 0.07
+MAE_2: 0.06
+MAE_3: 0.07
+MAE_4: 0.08
+
+sample 11:
+MAE_1: 0.13
+MAE_2: 0.05
+MAE_3: 0.05
+MAE_4: 0.05
+
+sample 12:
+MAE_1: 0.08
+MAE_2: 0.02
+MAE_3: 0.04
+MAE_4: 0.05
+
+sample 13:
+MAE_1: 0.02
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 14:
+MAE_1: 0.17
+MAE_2: 0.03
+MAE_3: 0.06
+MAE_4: 0.33
+
+sample 15:
+MAE_1: 0.15
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.04
+
+sample 16:
+MAE_1: 0.05
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 17:
+MAE_1: 0.34
+MAE_2: 0.10
+MAE_3: 0.06
+MAE_4: 0.02
+
+sample 18:
+MAE_1: 0.13
+MAE_2: 0.03
+MAE_3: 0.10
+MAE_4: 0.03
+
+sample 19:
+MAE_1: 0.25
+MAE_2: 0.06
+MAE_3: 0.08
+MAE_4: 0.04
+
+sample 20:
+MAE_1: 0.21
+MAE_2: 0.04
+MAE_3: 0.12
+MAE_4: 0.05
+
+sample 21:
+MAE_1: 0.05
+MAE_2: 0.16
+MAE_3: 0.09
+MAE_4: 0.13
+
+sample 22:
+MAE_1: 0.45
+MAE_2: 0.03
+MAE_3: 0.02
+MAE_4: 0.44
+
+sample 23:
+MAE_1: 0.12
+MAE_2: 0.04
+MAE_3: 0.03
+MAE_4: 0.09
+
+sample 24:
+MAE_1: 0.32
+MAE_2: 0.03
+MAE_3: 0.12
+MAE_4: 0.04
+
+sample 25:
+MAE_1: 0.03
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 26:
+MAE_1: 0.03
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 27:
+MAE_1: 0.19
+MAE_2: 0.10
+MAE_3: 0.05
+MAE_4: 0.02
+
+sample 28:
+MAE_1: 0.24
+MAE_2: 0.18
+MAE_3: 0.06
+MAE_4: 0.19
+
+sample 29:
+MAE_1: 0.10
+MAE_2: 0.05
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 30:
+MAE_1: 0.15
+MAE_2: 0.14
+MAE_3: 0.06
+MAE_4: 0.05
+
+sample 31:
+MAE_1: 0.03
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 32:
+MAE_1: 0.29
+MAE_2: 0.32
+MAE_3: 0.13
+MAE_4: 0.03
+
+sample 33:
+MAE_1: 0.02
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 34:
+MAE_1: 0.16
+MAE_2: 0.02
+MAE_3: 0.10
+MAE_4: 0.03
+
+sample 35:
+MAE_1: 0.21
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 36:
+MAE_1: 0.15
+MAE_2: 0.04
+MAE_3: 0.02
+MAE_4: 0.04
+
+sample 37:
+MAE_1: 0.08
+MAE_2: 0.03
+MAE_3: 0.06
+MAE_4: 0.04
+
+sample 38:
+MAE_1: 0.05
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.05
+
+sample 39:
+MAE_1: 0.05
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.09
+
+sample 40:
+MAE_1: 0.12
+MAE_2: 0.03
+MAE_3: 0.02
+MAE_4: 0.06
+
+sample 41:
+MAE_1: 0.03
+MAE_2: 0.04
+MAE_3: 0.06
+MAE_4: 0.05
+
+sample 42:
+MAE_1: 0.18
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 43:
+MAE_1: 0.24
+MAE_2: 0.14
+MAE_3: 0.04
+MAE_4: 0.21
+
+sample 44:
+MAE_1: 0.12
+MAE_2: 0.16
+MAE_3: 0.09
+MAE_4: 0.12
+
+sample 45:
+MAE_1: 0.15
+MAE_2: 0.05
+MAE_3: 0.06
+MAE_4: 0.06
+
+sample 46:
+MAE_1: 0.33
+MAE_2: 0.03
+MAE_3: 0.27
+MAE_4: 0.03
+
+sample 47:
+MAE_1: 0.02
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 48:
+MAE_1: 0.10
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 49:
+MAE_1: 0.14
+MAE_2: 0.06
+MAE_3: 0.03
+MAE_4: 0.02
+
+sample 50:
+MAE_1: 0.02
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 51:
+MAE_1: 0.35
+MAE_2: 0.06
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 52:
+MAE_1: 0.34
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 53:
+MAE_1: 0.24
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.10
+
+sample 54:
+MAE_1: 0.02
+MAE_2: 0.02
+MAE_3: 0.01
+MAE_4: 0.02
+
+sample 55:
+MAE_1: 0.24
+MAE_2: 0.02
+MAE_3: 0.05
+MAE_4: 0.03
+
+sample 56:
+MAE_1: 0.17
+MAE_2: 0.02
+MAE_3: 0.03
+MAE_4: 0.12
+
+sample 57:
+MAE_1: 0.07
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 58:
+MAE_1: 0.02
+MAE_2: 0.16
+MAE_3: 0.03
+MAE_4: 0.02
+
+sample 59:
+MAE_1: 0.24
+MAE_2: 0.10
+MAE_3: 0.11
+MAE_4: 0.06
+
+sample 60:
+MAE_1: 0.23
+MAE_2: 0.03
+MAE_3: 0.05
+MAE_4: 0.03
+
+sample 61:
+MAE_1: 0.35
+MAE_2: 0.04
+MAE_3: 0.07
+MAE_4: 0.05
+
+sample 62:
+MAE_1: 0.05
+MAE_2: 0.02
+MAE_3: 0.09
+MAE_4: 0.02
+
+sample 63:
+MAE_1: 0.25
+MAE_2: 0.05
+MAE_3: 0.07
+MAE_4: 0.07
+
+sample 64:
+MAE_1: 0.08
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.24
+
+sample 65:
+MAE_1: 0.21
+MAE_2: 0.10
+MAE_3: 0.10
+MAE_4: 0.02
+
+sample 66:
+MAE_1: 0.06
+MAE_2: 0.11
+MAE_3: 0.06
+MAE_4: 0.09
+
+sample 67:
+MAE_1: 0.08
+MAE_2: 0.09
+MAE_3: 0.05
+MAE_4: 0.08
+
+sample 68:
+MAE_1: 0.03
+MAE_2: 0.02
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 69:
+MAE_1: 0.06
+MAE_2: 0.11
+MAE_3: 0.10
+MAE_4: 0.11
+
+sample 70:
+MAE_1: 0.17
+MAE_2: 0.05
+MAE_3: 0.07
+MAE_4: 0.08
+
+sample 71:
+MAE_1: 0.03
+MAE_2: 0.15
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 72:
+MAE_1: 0.09
+MAE_2: 0.03
+MAE_3: 0.08
+MAE_4: 0.02
+
+sample 73:
+MAE_1: 0.16
+MAE_2: 0.12
+MAE_3: 0.03
+MAE_4: 0.07
+
+sample 74:
+MAE_1: 0.13
+MAE_2: 0.17
+MAE_3: 0.12
+MAE_4: 0.12
+
+sample 75:
+MAE_1: 0.07
+MAE_2: 0.06
+MAE_3: 0.02
+MAE_4: 0.07
+
+sample 76:
+MAE_1: 0.13
+MAE_2: 0.03
+MAE_3: 0.06
+MAE_4: 0.03
+
+sample 77:
+MAE_1: 0.11
+MAE_2: 0.05
+MAE_3: 0.07
+MAE_4: 0.05
+
+sample 78:
+MAE_1: 0.42
+MAE_2: 0.03
+MAE_3: 0.18
+MAE_4: 0.05
+
+sample 79:
+MAE_1: 0.01
+MAE_2: 0.01
+MAE_3: 0.01
+MAE_4: 0.02
+
+sample 80:
+MAE_1: 0.17
+MAE_2: 0.03
+MAE_3: 0.05
+MAE_4: 0.03
+
+sample 81:
+MAE_1: 0.03
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 82:
+MAE_1: 0.02
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.04
+
+sample 83:
+MAE_1: 0.17
+MAE_2: 0.02
+MAE_3: 0.06
+MAE_4: 0.02
+
+sample 84:
+MAE_1: 0.03
+MAE_2: 0.02
+MAE_3: 0.05
+MAE_4: 0.02
+
+sample 85:
+MAE_1: 0.02
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 86:
+MAE_1: 0.11
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.13
+
+sample 87:
+MAE_1: 0.08
+MAE_2: 0.09
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 88:
+MAE_1: 0.18
+MAE_2: 0.03
+MAE_3: 0.02
+MAE_4: 0.03
+
+sample 89:
+MAE_1: 0.24
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 90:
+MAE_1: 0.02
+MAE_2: 0.03
+MAE_3: 0.02
+MAE_4: 0.03
+
+sample 91:
+MAE_1: 0.27
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.03
+
+sample 92:
+MAE_1: 0.03
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 93:
+MAE_1: 0.13
+MAE_2: 0.10
+MAE_3: 0.12
+MAE_4: 0.13
+
+sample 94:
+MAE_1: 0.11
+MAE_2: 0.03
+MAE_3: 0.03
+MAE_4: 0.04
+
+sample 95:
+MAE_1: 0.05
+MAE_2: 0.08
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 96:
+MAE_1: 0.03
+MAE_2: 0.03
+MAE_3: 0.07
+MAE_4: 0.02
+
+sample 97:
+MAE_1: 0.31
+MAE_2: 0.02
+MAE_3: 0.06
+MAE_4: 0.04
+
+sample 98:
+MAE_1: 0.02
+MAE_2: 0.02
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 99:
+MAE_1: 0.18
+MAE_2: 0.06
+MAE_3: 0.02
+MAE_4: 0.02
+
+sample 100:
+MAE_1: 0.01
+MAE_2: 0.01
+MAE_3: 0.01
+MAE_4: 0.01
+

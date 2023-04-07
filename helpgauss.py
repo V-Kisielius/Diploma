@@ -1,5 +1,6 @@
 import torch
 import gpytorch
+from gpytorch.constraints import Interval
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -7,23 +8,19 @@ IMG_SIZE = (50, 100)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def map_to_cylinder(points):
-    return torch.stack((torch.cos(2 * torch.pi * points[:, 1]), torch.sin(2 * torch.pi * points[:, 1]), points[:, 0]), -1)
+    return torch.stack((torch.cos(2 * torch.pi * points[:, 1]), torch.sin(2 * torch.pi * points[:, 1]), torch.pi * points[:, 0]), -1)
 
 class ExactGPModel(gpytorch.models.ExactGP):
-    def __init__(self, train_x, train_y, likelihood, ker_name, dimension=3, nu=1.5, lengthscale_constraint=None, alpha_constraint=None):
+    def __init__(self, train_x, train_y, likelihood, RBF_lengthscale_constraint=None, Periodic_lengthscale_constraint=None):
         super(ExactGPModel, self).__init__(train_x, train_y, likelihood)
         self.likelihood = likelihood
-        self.dim = dimension
         self.mean_module = gpytorch.means.ZeroMean()
-        kernels = {
-                'RBF' : gpytorch.kernels.RBFKernel(ard_num_dims=self.dim, lengthscale_constraint=lengthscale_constraint),
-                'Matern' : gpytorch.kernels.MaternKernel(ard_num_dims=self.dim, nu=nu, lengthscale_constraint=lengthscale_constraint),
-                'RQ' : gpytorch.kernels.RQKernel(ard_num_dims=self.dim, lengthscale_constraint=lengthscale_constraint, alpha_constraint=alpha_constraint),
-                   }
-        self.kernel_name = ker_name
-        self.covar_module = gpytorch.kernels.ScaleKernel(kernels[self.kernel_name])
-        # self.covar_module = kernels[self.kernel_name]
-
+        self.RBF = gpytorch.kernels.RBFKernel(
+            ard_num_dims=3, lengthscale_constraint=RBF_lengthscale_constraint)
+        self.Periodic = gpytorch.kernels.PeriodicKernel(
+            ard_num_dims=3, lengthscale_constraint=Periodic_lengthscale_constraint)
+        self.covar_module = gpytorch.kernels.ScaleKernel(
+            self.RBF) + gpytorch.kernels.ScaleKernel(self.Periodic)
 
     def forward(self, x):
         mean_x = self.mean_module(x)
@@ -33,14 +30,16 @@ class ExactGPModel(gpytorch.models.ExactGP):
     def start_training(self, train_x, train_y, num_iter=100, need_plot=True):
         self.train()
         self.likelihood.train()
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.1)  # Includes GaussianLikelihood parameters
+        # Includes GaussianLikelihood parameters
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.1)
 
         # "Loss" for GPs - the marginal log likelihood
-        my_loss = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self)
+        my_loss = gpytorch.mlls.ExactMarginalLogLikelihood(
+            self.likelihood, self)
 
-        history = {"loss": [], 
-                "lengthscale": [],
-                "noise": []}
+        history = {"loss": [],
+                   "lengthscale": [],
+                   "noise": []}
 
         for _ in tqdm(range(num_iter), desc='Training'):
             optimizer.zero_grad()
@@ -52,30 +51,63 @@ class ExactGPModel(gpytorch.models.ExactGP):
             # history["lengthscale"].append(lengthscale)
             # history["noise"].append(self.likelihood.noise.item())
             optimizer.step()
-            
+
         if need_plot:
             plt.figure(figsize=(10, 5))
             plt.plot(history["loss"])
-            plt.title(f'Loss for {self.kernel_name} kernel')
+            plt.title(f'Loss')
             plt.xlabel('Iteration')
             plt.ylabel('Loss')
             plt.show()
-        
-    def predict(self, data, need_plot=True):
+
+    def predict(self, data, num_samples=16, need_plot=True):
         self.eval()
         self.likelihood.eval()
 
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
-            sampled_preds = self(data.to(device)).rsample(sample_shape=torch.Size((16,)))
+            sampled_preds = self(data.to(device)).rsample(
+                sample_shape=torch.Size((num_samples,)))
 
         if need_plot:
-            _, axs = plt.subplots(4, 4, figsize=(20, 10))
-            plt.suptitle(f'Predictions for {self.kernel_name} kernel')
-            for i in range(4):
-                for j in range(4):
-                    axs[i, j].imshow(sampled_preds[i*4+j].cpu().detach().numpy().reshape(IMG_SIZE), cmap='PuOr')
-                    axs[i, j].contour(sampled_preds[i*4+j].cpu().detach().numpy().reshape(IMG_SIZE), levels=0, colors='k')
+            n = min(int(num_samples ** 0.5), 4)
+            _, axs = plt.subplots(n, n, figsize=(20, 10))
+            plt.suptitle(f'Samples')
+            for i in range(n):
+                for j in range(n):
+                    axs[i, j].imshow(
+                        sampled_preds[i*n+j].cpu().detach().numpy().reshape(IMG_SIZE), cmap='PuOr')
+                    axs[i, j].contour(
+                        sampled_preds[i*n+j].cpu().detach().numpy().reshape(IMG_SIZE), levels=0, colors='k')
                     axs[i, j].axis('off')
             plt.show()
 
         return sampled_preds
+    
+def default_train():
+    # Train set and test set initialization
+    dx, dy = 1 / IMG_SIZE[0], 1 / IMG_SIZE[1]
+    xv, yv = torch.meshgrid(torch.linspace(0, 1-dx, IMG_SIZE[0]), torch.linspace(0, 1-dy, IMG_SIZE[1]), indexing="ij")
+    x_test = torch.cat((
+        xv.contiguous().view(xv.numel(), 1),
+        yv.contiguous().view(yv.numel(), 1)),
+        dim=1)
+
+    x_train = torch.cat((x_test[:5*IMG_SIZE[1], :], x_test[-5*IMG_SIZE[1]:, :]), 0)
+    x_train = map_to_cylinder(x_train)
+    x_test = map_to_cylinder(x_test)
+    y_train = torch.cat((torch.ones(5*IMG_SIZE[1]), -torch.ones(5*IMG_SIZE[1])))
+
+    # Model initialization and training
+    rbf_lengthscale_right = Interval(0.01, 0.32)
+    periodic_lengthscale_right = Interval(0.01, 0.15)
+
+    likelihood = gpytorch.likelihoods.GaussianLikelihood()
+    model = ExactGPModel(x_train, y_train, likelihood, RBF_lengthscale_constraint=rbf_lengthscale_right, Periodic_lengthscale_constraint=periodic_lengthscale_right)
+
+    model = model.to(device)
+    x_train = x_train.to(device)
+    y_train = y_train.to(device)
+    
+    model.start_training(x_train, y_train, num_iter=100, need_plot=True)
+    
+    return model, x_test
