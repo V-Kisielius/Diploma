@@ -27,7 +27,7 @@ def downscale_map(img, sq_size) -> np.ndarray:
     plt.imshow(downsampled, cmap='gray')
     return downsampled
 
-def split_map(path, x_parts, scale_coef, color, need_plot=False):
+def split_map(path, x_parts, scale_coef, color):
     img = open_img_as_array(path) if isinstance(path, str) else path
     width, height = img.shape
     sq_size = width // x_parts
@@ -35,8 +35,7 @@ def split_map(path, x_parts, scale_coef, color, need_plot=False):
     delta = int(scale_coef * sq_size / 2)
     for x in range(sq_size // 2, width, sq_size):
         for y in range(sq_size // 2, height, sq_size): 
-            shift = np.random.randint(-delta // 2, delta // 2, 2)
-            splitted[x+shift[0]-delta:x+shift[0]+delta, y+shift[1]-delta:y+shift[1]+delta] = color
+            splitted[x-delta:x+delta, y-delta:y+delta] = color
     return splitted
 
 def prepare_gpr_results(img, x_parts=5, scale_coef=0.85, color=0, need_plot=False):
@@ -53,7 +52,7 @@ def prepare_gpr_results(img, x_parts=5, scale_coef=0.85, color=0, need_plot=Fals
     for x in range(1, img.shape[0]-1):
         for y in range(1, img.shape[1]-1):
             original[x, y] = sign[x, y] and (not sign[x-1, y] or not sign[x+1, y] or not sign[x, y-1] or not sign[x, y+1])
-    splitted = 1 - split_map(path=original, x_parts=x_parts, scale_coef=scale_coef, color=color, need_plot=False)
+    splitted = 1 - split_map(path=original, x_parts=x_parts, scale_coef=scale_coef, color=color)
     if need_plot:
         plt.figure(figsize=(20, 5))
         # original image

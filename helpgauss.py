@@ -83,7 +83,7 @@ class ExactGPModel(gpytorch.models.ExactGP):
 
         return sampled_preds
     
-def default_train():
+def default_train(rbf_right=0.32, periodic_right=0.15, iters=100):
     # Train set and test set initialization
     dx, dy = 1 / IMG_SIZE[0], 1 / IMG_SIZE[1]
     xv, yv = torch.meshgrid(torch.linspace(0, 1-dx, IMG_SIZE[0]), torch.linspace(0, 1-dy, IMG_SIZE[1]), indexing="ij")
@@ -98,8 +98,8 @@ def default_train():
     y_train = torch.cat((torch.ones(5*IMG_SIZE[1]), -torch.ones(5*IMG_SIZE[1])))
 
     # Model initialization and training
-    rbf_lengthscale_right = Interval(0.01, 0.32)
-    periodic_lengthscale_right = Interval(0.01, 0.15)
+    rbf_lengthscale_right = Interval(0, rbf_right)
+    periodic_lengthscale_right = Interval(0, periodic_right)
 
     likelihood = gpytorch.likelihoods.GaussianLikelihood()
     model = ExactGPModel(x_train, y_train, likelihood, RBF_lengthscale_constraint=rbf_lengthscale_right, Periodic_lengthscale_constraint=periodic_lengthscale_right)
@@ -108,6 +108,6 @@ def default_train():
     x_train = x_train.to(device)
     y_train = y_train.to(device)
     
-    model.start_training(x_train, y_train, num_iter=100, need_plot=True)
+    model.start_training(x_train, y_train, num_iter=iters, need_plot=True)
     
     return model, x_test
