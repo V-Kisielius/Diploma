@@ -38,12 +38,15 @@ def split_map(path, x_parts, scale_coef, color):
             splitted[x-delta:x+delta, y-delta:y+delta] = color
     return splitted
 
-def prepare_gpr_results(img, x_parts=5, scale_coef=0.85, color=0, need_plot=False):
+def color_black_points(img, p):
+    img = np.array(img)
+    img[img == 0] = np.random.choice([0, 1], size=img[img == 0].shape, p=[1-p, p])
+    return img
+
+def prepare_gpr_results(img, p, need_plot=False):
     # img = samples[i]
     # normalize to [-1, 1]
-    img = (img - img.min()) / (img.max() - img.min()) * 2 - 1
-    # print(img.min(), img.max())
-    # # img = (img - img.min()) / (img.max() - img.min()) * 255
+    # img = (img - img.min()) / (img.max() - img.min()) * 2 - 1
     sign = img > 0
     # values of sign are True or False
     # for every True value if at least one of its neighbours is False then it is a border
@@ -52,12 +55,13 @@ def prepare_gpr_results(img, x_parts=5, scale_coef=0.85, color=0, need_plot=Fals
     for x in range(1, img.shape[0]-1):
         for y in range(1, img.shape[1]-1):
             original[x, y] = sign[x, y] and (not sign[x-1, y] or not sign[x+1, y] or not sign[x, y-1] or not sign[x, y+1])
-    splitted = 1 - split_map(path=original, x_parts=x_parts, scale_coef=scale_coef, color=color)
+    original = 1 - original
+    splitted = color_black_points(original, p)
     if need_plot:
         plt.figure(figsize=(20, 5))
         # original image
         plt.subplot(1, 3, 1)
-        plt.imshow(1 - original, cmap='gray')
+        plt.imshow(original, cmap='gray')
         plt.title('Original')
         # sign distribution
         plt.subplot(1, 3, 2)
@@ -68,4 +72,4 @@ def prepare_gpr_results(img, x_parts=5, scale_coef=0.85, color=0, need_plot=Fals
         plt.imshow(splitted, cmap='gray')
         plt.title('Splitted')
 
-    return 1 - original, sign, splitted
+    return original, sign, splitted
