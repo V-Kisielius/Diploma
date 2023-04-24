@@ -7,8 +7,8 @@ print(f'Selected devie is {device}')
 
 BOUND_THRASHOLD = 0.3
 
-PATH_TO_PM_DATA = './data/pm_format'
-PATH_TO_MARKUP_DATA = './data/CL_23.txt'
+PATH_TO_PM_DATA = './Kislovodsk/pm_format'
+PATH_TO_MARKUP_DATA = './Kislovodsk/CL_23.txt'
 PATH_TO_EPOCH_OUTS = './imgs/epoch_outs'
 PATH_TO_TARGET0 = './imgs/target0/'
 PATH_TO_TARGET = './imgs/target/'

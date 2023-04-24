@@ -10,7 +10,6 @@ import os
 from tqdm import tqdm
 import matplotlib.gridspec as gridspec
 from IPython.display import clear_output
-from sklearn.metrics import f1_score
 
 from config import device, PATH_TO_EPOCH_OUTS
 
@@ -39,12 +38,7 @@ class Net(nn.Module):
                         #   'sign_integral_abs': []}
         
     def forward(self, x):
-        #x = x.to(device)
         output = self.net(x)
-        # res = output.clone()
-        # output[res > BOUND_THRASHOLD] = 1
-        # output[res > BOUND_THRASHOLD] = 1
-
         return output
 
     def pretrain(self, img_size, num_epochs):
@@ -77,7 +71,6 @@ class Net(nn.Module):
         plt.figure(figsize=(12, 6))
         plt.title('Pretrained model output')
         plt.imshow(output_list[0].view(img_size).detach().cpu(), cmap='PuOr')
-
 
     def compute_and_plot_gradient(self, input_list=None):
         batch_list = input_list if input_list is not None else self.data_list
@@ -112,7 +105,7 @@ class Net(nn.Module):
     def restart_model(self, lr, weight_decay=1e-3):
         model = Net(dataset_list=self.dataset_list, lr=lr, weight_decay=weight_decay)
         model.to(device)
-        return model    
+        return model
 
     def save_state_dict(self, path):
         os.makedirs('/'.join(path.split('/')[:-1]), exist_ok=True)
@@ -130,35 +123,27 @@ class Net(nn.Module):
         input_list = input_list if input_list is not None else self.data_list
         with torch.no_grad():
             output_list = [self(input.to(device)).cpu().detach() for input in input_list]
-        # if need_plot:
-        #     plt.figure(figsize=(10, 20))
-        #     for (i, output), data in zip(enumerate(output_list), self.dataset_list):
-        #         original = torch.from_numpy(data.img_array).clone()
-        #         prediction = output.view(data.img_array.shape).clone()
+        if need_plot:
+            plt.figure(figsize=(10, 20))
+            for (i, output), data in zip(enumerate(output_list), self.dataset_list):
+                original = torch.from_numpy(data.img_array).clone()
+                prediction = output.view(data.img_array.shape).clone()
 
-        #         mask = original < 255
-        #         original[mask] = 0
-        #         original[~mask] = 1
+                mask = original < 255
+                original[mask] = 0
+                original[~mask] = 1
 
-        #         plt.subplot(len(output_list) + 2, 1, i + 1)
-        #         plt.title('Original image')
-        #         plt.imshow(original, cmap='gray')
+                plt.subplot(len(output_list) + 2, 1, i + 1)
+                plt.title('Original image')
+                plt.imshow(original, cmap='gray')
 
-        #         mask = prediction.abs() < threshold
-        #         prediction[mask] = 0
-        #         prediction[~mask] = 1
+                plt.subplot(len(output_list) + 2, 1, i + 2)
+                plt.title('Prediction')
+                plt.imshow(prediction, cmap='gray')
 
-        #         plt.subplot(len(output_list) + 2, 1, i + 2)
-        #         plt.title('Prediction')
-        #         plt.imshow(prediction, cmap='gray')
-                
-        #         f1 = f1_score(original.flatten(), prediction.flatten())
-        #         f2 = f1_score(1 - original.flatten(), 1 - prediction.flatten())
-        #         mse = torch.nn.functional.mse_loss(prediction, original)
-
-        #         plt.subplot(len(output_list) + 2, 1, i + 3)
-        #         plt.title(f'Visualization of the function $f(x,y,z)$\n on input №{i + 1}\nMSE = {mse}\nF1_1 = {f1}\nF1_2 = {f2}')
-        #         plt.imshow(output.view(data.img_array.shape), cmap='PuOr', vmin=-1, vmax=1) 
+                plt.subplot(len(output_list) + 2, 1, i + 3)
+                plt.title(f'Visualization of the function $f(x,y,z)$\n on input №{i + 1}')
+                plt.imshow(output.view(data.img_array.shape), cmap='PuOr', vmin=-1, vmax=1) 
 
         return output_list # if input_list else output_list, mse, f1, f2
 

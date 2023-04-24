@@ -17,7 +17,7 @@ class SynopticMap():
         my_shape = [int(x) for x in lines[0].split()[-6:-4]]
         my_shape.reverse()
         width, height = my_shape
-        img_array = np.full(shape=my_shape, fill_value=255)
+        img_array = np.ones(shape=my_shape, dtype=np.uint8)
         for line in lines[3:]:
             line = [int(x) for x in line.split()]
             if len(line) == 3:
