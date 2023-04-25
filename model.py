@@ -139,11 +139,7 @@ class Net(nn.Module):
 
                 plt.subplot(len(output_list) + 2, 1, i + 2)
                 plt.title('Prediction')
-                plt.imshow(prediction, cmap='gray')
-
-                plt.subplot(len(output_list) + 2, 1, i + 3)
-                plt.title(f'Visualization of the function $f(x,y,z)$\n on input №{i + 1}')
-                plt.imshow(output.view(data.img_array.shape), cmap='PuOr', vmin=-1, vmax=1) 
+                plt.imshow(prediction, cmap='PuOr')
 
         return output_list # if input_list else output_list, mse, f1, f2
 
