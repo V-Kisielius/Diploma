@@ -3,9 +3,6 @@ import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 torch.cuda.set_device(0)
-print(f'Selected devie is {device}')
-
-BOUND_THRASHOLD = 0.3
 
 PATH_TO_PM_DATA = './Kislovodsk/pm_format'
 PATH_TO_MARKUP_DATA = './Kislovodsk/CL_23.txt'

@@ -1,26 +1,31 @@
 import torch
 import gpytorch
 from gpytorch.constraints import Interval
+from gpytorch.kernels import RBFKernel, PeriodicKernel, ScaleKernel
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from config import device
 
 IMG_SIZE = (50, 100)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def map_to_cylinder(points):
-    return torch.stack((torch.cos(2 * torch.pi * points[:, 1]), torch.sin(2 * torch.pi * points[:, 1]), torch.pi * points[:, 0]), -1)
+    return torch.stack((
+        torch.cos(2*torch.pi*points[:, 1]),
+        torch.sin(2*torch.pi*points[:, 1]),
+        torch.pi*points[:, 0]), -1)
 
 class ExactGPModel(gpytorch.models.ExactGP):
-    def __init__(self, train_x, train_y, likelihood, RBF_lengthscale_constraint=None, Periodic_lengthscale_constraint=None):
+    def __init__(self, train_x, train_y, likelihood,
+                 RBF_lengthscale_constraint=None,
+                 Periodic_lengthscale_constraint=None):
         super(ExactGPModel, self).__init__(train_x, train_y, likelihood)
         self.likelihood = likelihood
         self.mean_module = gpytorch.means.ZeroMean()
-        self.RBF = gpytorch.kernels.RBFKernel(
-            ard_num_dims=3, lengthscale_constraint=RBF_lengthscale_constraint)
-        self.Periodic = gpytorch.kernels.PeriodicKernel(
-            ard_num_dims=3, lengthscale_constraint=Periodic_lengthscale_constraint)
-        self.covar_module = gpytorch.kernels.ScaleKernel(
-            self.RBF) + gpytorch.kernels.ScaleKernel(self.Periodic)
+        self.RBF = RBFKernel(ard_num_dims=3,
+                             lengthscale_constraint=RBF_lengthscale_constraint)
+        self.Periodic = PeriodicKernel(ard_num_dims=3,
+                                       lengthscale_constraint=Periodic_lengthscale_constraint)
+        self.covar_module = ScaleKernel(self.RBF) + ScaleKernel(self.Periodic)
 
     def forward(self, x):
         mean_x = self.mean_module(x)
@@ -86,24 +91,23 @@ class ExactGPModel(gpytorch.models.ExactGP):
 def default_train(rbf_right=0.32, periodic_right=0.15, iters=100):
     # Train set and test set initialization
     dx, dy = 1 / IMG_SIZE[0], 1 / IMG_SIZE[1]
-    xv, yv = torch.meshgrid(torch.linspace(0, 1-dx, IMG_SIZE[0]), torch.linspace(0, 1-dy, IMG_SIZE[1]), indexing="ij")
+    x, y = torch.linspace(0, 1-dx, IMG_SIZE[0]), torch.linspace(0, 1-dy, IMG_SIZE[1])
+    xv, yv = torch.meshgrid(x, y, indexing="ij")
     x_test = torch.cat((
         xv.contiguous().view(xv.numel(), 1),
         yv.contiguous().view(yv.numel(), 1)),
         dim=1)
-
     x_train = torch.cat((x_test[:5*IMG_SIZE[1], :], x_test[-5*IMG_SIZE[1]:, :]), 0)
     x_train = map_to_cylinder(x_train)
     x_test = map_to_cylinder(x_test)
     y_train = torch.cat((torch.ones(5*IMG_SIZE[1]), -torch.ones(5*IMG_SIZE[1])))
-
     # Model initialization and training
     rbf_lengthscale_right = Interval(0, rbf_right)
     periodic_lengthscale_right = Interval(0, periodic_right)
-
     likelihood = gpytorch.likelihoods.GaussianLikelihood()
-    model = ExactGPModel(x_train, y_train, likelihood, RBF_lengthscale_constraint=rbf_lengthscale_right, Periodic_lengthscale_constraint=periodic_lengthscale_right)
-
+    model = ExactGPModel(x_train, y_train, likelihood,
+                         RBF_lengthscale_constraint=rbf_lengthscale_right,
+                         Periodic_lengthscale_constraint=periodic_lengthscale_right)
     model = model.to(device)
     x_train = x_train.to(device)
     y_train = y_train.to(device)

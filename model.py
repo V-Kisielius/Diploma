@@ -1,30 +1,32 @@
 import torch
 import torch.nn as nn
-import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
-import plotly_express as px
-from itertools import islice
-import math
 import os
-from tqdm import tqdm
-import matplotlib.gridspec as gridspec
+import math
+
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+from matplotlib import gridspec
 from IPython.display import clear_output
+
+from itertools import islice
+from tqdm import tqdm
 
 from config import device, PATH_TO_EPOCH_OUTS
 
 class Net(nn.Module):
-    __slots__ = 'dataset_list'
-    def __init__(self, dataset_list, lr, weight_decay=1e-3):
+    __slots__ = 'image_list'
+    def __init__(self, image_list, lr, weight_decay=1e-3):
         super(Net, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(3, 6), nn.ELU(),
             nn.Linear(6, 12), nn.ELU(),
             nn.Linear(12, 24), nn.ELU(),
-            nn.Linear(24, 1), nn.Tanh())
+            nn.Linear(24, 1), nn.Tanh()
+            )
         # self.weight = torch.nn.Parameter(torch.FloatTensor([1]), requires_grad=True)
-        self.dataset_list = dataset_list
-        self.data_list = [data.data_3d for data in self.dataset_list]
+        self.image_list = image_list
+        self.data_list = [img.data_3d for img in self.image_list]
         self.lr = lr
         self.weight_decay = weight_decay
         self.optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
@@ -34,12 +36,78 @@ class Net(nn.Module):
                           'bound_integral': [],
                           'orientation_integral': [],
                           'f_integral': []}
-                        #   'sign_integral': [],
-                        #   'sign_integral_abs': []}
-        
+
     def forward(self, x):
         output = self.net(x)
         return output
+
+    def restart_model(self, lr, weight_decay=1e-3):
+        model = Net(image_list=self.image_list, lr=lr, weight_decay=weight_decay)
+        model.to(device)
+        return model
+
+    def change_lr(self, lr):
+        for g in self.optimizer.param_groups:
+            g['lr'] = lr
+
+    def save_state_dict(self, path):
+        os.makedirs('/'.join(path.split('/')[:-1]), exist_ok=True)
+        torch.save(self.state_dict(), path)
+
+    def show_3d(self, prediction_list, map_number):
+        x, y, z = self.data_list[map_number].T
+        fig = go.Figure(data=[go.Scatter3d(
+                x=x.cpu().detach(),
+                y=y.cpu().detach(),
+                z=-z.cpu().detach(),
+                mode='markers',
+                marker=dict(
+                    size=2,
+                    color=prediction_list[map_number].flatten(),
+                    colorscale='PuOr'))])
+        fig.show()
+
+    def plot_on_train(self, output_list, epoch, need_save):
+        output_list = [output.cpu().detach().view(img.img_array.shape)
+                       for output, img in zip(output_list, self.image_list)]
+        clear_output(wait=True)
+        gs = gridspec.GridSpec(2, len(self.image_list) + 1)
+        fig = plt.figure(figsize=(16, 6))
+        ax1 = fig.add_subplot(gs[:, 0])
+        ax1.set_xlabel('Epoch')
+        ax1.set_ylabel('Loss')
+        ax1.plot(self.loss_dict['loss'])
+        for (i, img), data in zip(enumerate(output_list), self.image_list):
+            ax2 = fig.add_subplot(gs[0, i + 1])
+            ax2.title.set_text(f'Prediction №{i + 1}')
+            ax2.get_xaxis().set_ticks([])
+            ax2.get_yaxis().set_ticks([])
+            ax2.imshow(img, cmap='PuOr', vmin=-1, vmax=1)
+
+            ax3 = fig.add_subplot(gs[1, i + 1])
+            ax3.get_xaxis().set_ticks([])
+            ax3.get_yaxis().set_ticks([])
+            ax3.title.set_text(f'Input image №{i + 1}')
+            ax3.imshow(data.img_array, cmap='gray')
+        if need_save:
+            plt.savefig(PATH_TO_EPOCH_OUTS + '/epoch%06d.png' % epoch)
+        plt.show()
+
+    def start_training(self, num_epochs, need_plot, need_save, my_weight=1e-1, show_frequency=1e+2):
+        if need_save:
+            os.makedirs(PATH_TO_EPOCH_OUTS, exist_ok=True)
+        for value in self.loss_dict.values():
+            value.clear()
+        batch_list = [data.to(device) for data in self.data_list]
+        for epoch in range(1, int(num_epochs) + 1):
+            output_list = [self(batch) for batch in batch_list]
+            self.optimizer.zero_grad()
+            loss = self.compute_loss(output_list=output_list, my_weight=my_weight)
+            loss.backward(retain_graph=True)
+            self.optimizer.step()
+            if need_plot and (epoch % int(show_frequency) == 0 or epoch == num_epochs):
+                self.plot_on_train(output_list, epoch, need_save)
+                self.show_loss_items()
 
     def pretrain(self, img_size, num_epochs):
         width, height = img_size
@@ -72,62 +140,15 @@ class Net(nn.Module):
         plt.title('Pretrained model output')
         plt.imshow(output_list[0].view(img_size).detach().cpu(), cmap='PuOr')
 
-    def compute_and_plot_gradient(self, input_list=None):
-        batch_list = input_list if input_list is not None else self.data_list
-        for batch in batch_list:
-            batch.requires_grad_()
-        tmp_list = [self(batch.to(device)) for batch in batch_list]
-        for tmp in tmp_list:
-            tmp.sum().backward()
-        grad_out_list = [batch.grad.cpu() for batch in batch_list]
-        grad_map_list = [((grad_out.pow(2).sum(dim=1)).pow(0.5)).view(dataset.img_array.shape) for grad_out, dataset in zip(grad_out_list, self.dataset_list)]
-        plt.figure(figsize=(12, 6))
-        for i, grad_map in enumerate(grad_map_list):
-            plt.subplot(1, len(grad_map_list), i + 1)
-            plt.title(r'Gradient map for $||\nabla f(x,y,z)||_2$' + f'\non input №{i + 1}', fontsize=15)
-            plt.imshow(grad_map, cmap='plasma')
-            plt.colorbar(location='bottom')
-        return grad_out_list, grad_map_list
-
-    def change_lr(self, lr):
-        for g in self.optimizer.param_groups:
-            g['lr'] = lr
-
-    def show_loss_items(self):
-        plt.figure(figsize=(16, 6))
-        for i, (key, value) in islice(enumerate(self.loss_dict.items()), 1, len(self.loss_dict.keys())):
-            plt.subplot(2, math.ceil((len(self.loss_dict.keys()) - 1) / 2), i)
-            plt.xlabel('Epoch')
-            plt.ylabel(key)
-            plt.plot(value)  
-        plt.show()
-
-    def restart_model(self, lr, weight_decay=1e-3):
-        model = Net(dataset_list=self.dataset_list, lr=lr, weight_decay=weight_decay)
-        model.to(device)
-        return model
-
-    def save_state_dict(self, path):
-        os.makedirs('/'.join(path.split('/')[:-1]), exist_ok=True)
-        torch.save(self.state_dict(), path)
-
-    def show_3d(self, prediction_list, map_number):
-        x, y, z = self.data_list[map_number].T
-        df = pd.DataFrame({'x': x.cpu().detach().numpy(),
-                            'y': y.cpu().detach().numpy(),
-                            'z': -z.cpu().detach().numpy(),
-                            'label': prediction_list[map_number].flatten()})
-        return px.scatter_3d(df, x='x', y='y', z='z', color='label').update_traces(marker={'size': 2})
-
     def test_model(self, input_list=None, need_plot=False):
         input_list = input_list if input_list is not None else self.data_list
         with torch.no_grad():
-            output_list = [self(input.to(device)).cpu().detach() for input in input_list]
+            output_list = [self(inpt.to(device)).cpu().detach() for inpt in input_list]
         if need_plot:
             plt.figure(figsize=(10, 20))
-            for (i, output), data in zip(enumerate(output_list), self.dataset_list):
-                original = torch.from_numpy(data.img_array).clone()
-                prediction = output.view(data.img_array.shape).clone()
+            for (i, output), img in zip(enumerate(output_list), self.image_list):
+                original = torch.from_numpy(img.img_array).clone()
+                prediction = output.view(img.img_array.shape).clone()
 
                 mask = original < 255
                 original[mask] = 0
@@ -141,89 +162,61 @@ class Net(nn.Module):
                 plt.title('Prediction')
                 plt.imshow(prediction, cmap='PuOr')
 
-        return output_list # if input_list else output_list, mse, f1, f2
+        return output_list
 
     def test_model_(self):
         with torch.no_grad():
-            original = torch.from_numpy(self.dataset_list[0].img_array).clone()
+            original = torch.from_numpy(self.image_list[0].img_array).clone()
             x = self.data_list[0].to(device)
             prediction = self(x).cpu().detach().view(original.shape).clone()
             prediction = (prediction > 0).float()
             mse = torch.nn.functional.mse_loss(prediction, original)
         return mse
-    
-    def start_training(self, num_epochs, my_weight=1e-1, show_frequency=1e+2, need_plot=False, need_save=True):
-        if need_save:
-            os.makedirs(PATH_TO_EPOCH_OUTS, exist_ok=True)
 
-        for value in self.loss_dict.values():
-            value.clear()
+    def compute_and_plot_gradient(self, input_list=None): 
+        batch_list = self.data_list if input_list is None else input_list
+        for batch in batch_list:
+            batch.requires_grad_()
+        tmp_list = [self(batch.to(device)) for batch in batch_list]
+        for tmp in tmp_list:
+            tmp.sum().backward()
+        grad_out_list = [batch.grad.cpu() for batch in batch_list]
+        grad_map_list = [((grad_out.pow(2).sum(dim=1)).pow(0.5)).view(img.img_array.shape) for grad_out, img in zip(grad_out_list, self.image_list)]
+        plt.figure(figsize=(12, 6))
+        for i, grad_map in enumerate(grad_map_list):
+            plt.subplot(1, len(grad_map_list), i + 1)
+            plt.title(r'Gradient map for $||\nabla f(x,y,z)||_2$' + f'\non input №{i + 1}', fontsize=15)
+            plt.imshow(grad_map, cmap='plasma')
+            plt.colorbar(location='bottom')
+        return grad_out_list, grad_map_list
 
-        batch_list = [data.to(device) for data in self.data_list]
-
-        for epoch in range(1, int(num_epochs) + 1):
-            output_list = [self(batch) for batch in batch_list]
-
-            self.optimizer.zero_grad()
-            loss = self.compute_loss(output_list=output_list, my_weight=my_weight) 
-            loss.backward(retain_graph=True)
-            self.optimizer.step()
-            
-            if need_plot and (epoch % int(show_frequency) == 0 or epoch == num_epochs):
-                output_list = [output.cpu().detach().view(dataset.img_array.shape) for output, dataset in zip(output_list, self.dataset_list)]
-                clear_output(wait=True)
-                gs = gridspec.GridSpec(2, len(self.dataset_list) + 1)
-                fig = plt.figure(figsize=(16, 6))
-                
-                ax1 = fig.add_subplot(gs[:, 0])
-                ax1.set_xlabel('Epoch')
-                ax1.set_ylabel('Loss')
-                ax1.plot(self.loss_dict['loss'])
-
-                for (i, img), data in zip(enumerate(output_list), self.dataset_list):
-                    ax2 = fig.add_subplot(gs[0, i + 1])
-                    ax2.title.set_text(f'Prediction №{i + 1}')
-                    ax2.get_xaxis().set_ticks([])
-                    ax2.get_yaxis().set_ticks([])
-                    ax2.imshow(img, cmap='PuOr', vmin=-1, vmax=1)
-
-                    ax3 = fig.add_subplot(gs[1, i + 1])
-                    ax3.get_xaxis().set_ticks([])
-                    ax3.get_yaxis().set_ticks([])
-                    ax3.title.set_text(f'Input image №{i + 1}')
-                    ax3.imshow(data.img_array, cmap='gray')
-    
-                if need_save:
-                    plt.savefig(PATH_TO_EPOCH_OUTS + '/epoch%06d.png' % epoch)
-
-                plt.show()
-                self.show_loss_items()
+    def show_loss_items(self):
+        plt.figure(figsize=(16, 6))
+        losses = list(self.loss_dict.items())[1:]
+        nrows = 2
+        ncols = len(self.loss_dict) // 2
+        for i, (key, value) in enumerate(losses):
+            plt.subplot(nrows, ncols, i + 1)
+            plt.xlabel('Epoch')
+            plt.ylabel(key)
+            plt.plot(value)
+        plt.show()
 
     def compute_loss(self, output_list, my_weight): 
-        loss, f_abs_integral, bound_integral, orientation_integral, f_integral = torch.zeros(len(self.loss_dict.items())) #, sign_integral, sign_integral_abs = torch.zeros(7)
-        loss_, f_abs_integral_, bound_integral_, orientation_integral_, f_integral_ = torch.zeros(len(self.loss_dict.items())) #, sign_integral_, sign_integral_abs_ = torch.zeros(7)
-
-        for (output, dataset) in zip(output_list, self.dataset_list):
+        loss, f_abs_integral, bound_integral, orientation_integral, f_integral = torch.zeros(len(self.loss_dict))
+        loss_, f_abs_integral_, bound_integral_, orientation_integral_, f_integral_ = torch.zeros(len(self.loss_dict))
+        rows = int(0.05 * self.image_list[0].height)
+        for (output, img) in zip(output_list, self.image_list):
             output = output.flatten()
-            upper_bound = (output[:dataset.row_numbers].sum() / len(output[:dataset.row_numbers]) - 1).abs()
-            lower_bound = (output[-dataset.row_numbers:].sum() / len(output[-dataset.row_numbers:]) + 1).abs()
-
-            for key, _ in self.loss_dict.items():
+            for key in self.loss_dict.keys():
                 locals()[key + "_"] = locals()[key].clone()
-
-            # bound_length_integral  = bound_length_integral_ + len(torch.masked_select(output, ~output.abs().ge(0.5))) / len(output)
-            f_integral = f_integral_ + my_weight * output.sum().abs() / dataset.total_pixel
-            # sign_integral = sign_integral_ + output[dataset.sign_mask].sum().abs() / len(dataset.sign_mask)
-            # sign_integral_abs = sign_integral_abs_ + 1 - output[dataset.sign_mask].abs().sum() / len(dataset.sign_mask)
+            upper_bound = (output[:rows].sum() / len(output[:rows]) - 1).abs()
+            lower_bound = (output[-rows:].sum() / len(output[-rows:]) + 1).abs()
+            f_integral = f_integral_ + my_weight * output.sum().abs() / img.total_pixel
             orientation_integral = orientation_integral_ + 0.25 * (upper_bound + lower_bound)
-            f_abs_integral = f_abs_integral_ + 1 - output[dataset.mask].abs().sum() / (dataset.total_pixel - dataset.bound_length) # хочу НЕ границу +-1
-            bound_integral = bound_integral_ + output[dataset.bound_mask].pow(2).sum() / dataset.bound_length # хочу на границе 0
-            loss = loss_ + f_abs_integral + bound_integral + orientation_integral + f_integral# + 0.1 * (sign_integral + sign_integral_abs)
-
-        for key, _ in self.loss_dict.items():
+            f_abs_integral = f_abs_integral_ + 1 - output[img.mask].abs().sum() / (img.total_pixel - img.bound_length) # хочу НЕ границу +-1
+            bound_integral = bound_integral_ + output[img.bound_mask].pow(2).sum() / img.bound_length # хочу на границе 0
+            loss = loss_ + f_abs_integral + bound_integral + orientation_integral + f_integral
+        for key in self.loss_dict.keys():
             self.loss_dict[key].append(locals()[key].item())
-            
         return loss
-        # w_bound = torch.sigmoid(self.weight)
-        # w_abs = 1 - w_bound
-        # return (w_abs + 1) * f_abs_integral + (w_bound + 1) * bound_integral + orientation_integral, w_bound
