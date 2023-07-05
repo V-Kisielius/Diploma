@@ -2,17 +2,12 @@ import torch
 import torch.nn as nn
 import numpy as np
 import os
-import math
-
+from tqdm import tqdm
 import matplotlib.pyplot as plt
-import plotly.graph_objects as go
 from matplotlib import gridspec
 from IPython.display import clear_output
-
-from itertools import islice
-from tqdm import tqdm
-
-from config import device, PATH_TO_EPOCH_OUTS
+from config import LOSSES, device, PATH_TO_EPOCH_OUTS
+from helper import plot_3d_tensor
 
 class Net(nn.Module):
     __slots__ = 'image_list'
@@ -31,11 +26,7 @@ class Net(nn.Module):
         self.weight_decay = weight_decay
         self.optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', verbose=True, patience=100)
-        self.loss_dict = {'loss': [],
-                          'f_abs_integral': [],
-                          'bound_integral': [],
-                          'orientation_integral': [],
-                          'f_integral': []}
+        self.loss_dict = {key: [] for key in LOSSES}
 
     def forward(self, x):
         output = self.net(x)
@@ -54,18 +45,11 @@ class Net(nn.Module):
         os.makedirs('/'.join(path.split('/')[:-1]), exist_ok=True)
         torch.save(self.state_dict(), path)
 
-    def show_3d(self, prediction_list, map_number):
-        x, y, z = self.data_list[map_number].T
-        fig = go.Figure(data=[go.Scatter3d(
-                x=x.cpu().detach(),
-                y=y.cpu().detach(),
-                z=-z.cpu().detach(),
-                mode='markers',
-                marker=dict(
-                    size=2,
-                    color=prediction_list[map_number].flatten(),
-                    colorscale='PuOr'))])
-        fig.show()
+    def show_3d(self, prediction_list, map_number, marker_size=2, colorscale='PuOr'):
+        plot_3d_tensor(tensor=self.data_list[map_number].cpu().detach(),
+                       color=prediction_list[map_number].flatten(),
+                       colorscale=colorscale,
+                       marker_size=marker_size)
 
     def plot_on_train(self, output_list, epoch, need_save):
         output_list = [output.cpu().detach().view(img.img_array.shape)
@@ -83,7 +67,6 @@ class Net(nn.Module):
             ax2.get_xaxis().set_ticks([])
             ax2.get_yaxis().set_ticks([])
             ax2.imshow(img, cmap='PuOr', vmin=-1, vmax=1)
-
             ax3 = fig.add_subplot(gs[1, i + 1])
             ax3.get_xaxis().set_ticks([])
             ax3.get_yaxis().set_ticks([])
@@ -141,7 +124,7 @@ class Net(nn.Module):
         plt.imshow(output_list[0].view(img_size).detach().cpu(), cmap='PuOr')
 
     def test_model(self, input_list=None, need_plot=False):
-        input_list = input_list if input_list is not None else self.data_list
+        input_list = self.data_list if input_list is None else input_list
         with torch.no_grad():
             output_list = [self(inpt.to(device)).cpu().detach() for inpt in input_list]
         if need_plot:

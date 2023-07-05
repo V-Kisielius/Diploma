@@ -3,9 +3,22 @@ import glob
 import numpy as np
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+
 
 def open_img_as_array(path_to_img: str) -> np.ndarray:
     return np.array(ImageOps.grayscale(Image.open(path_to_img))).astype(int)
+
+def plot_3d_tensor(tensor, color, colorscale='PuOr', marker_size=2):
+    x, y, z = tensor.T
+    fig = go.Figure(data=[go.Scatter3d(
+            x=x, y=y, z=z,
+            mode='markers',
+            marker=dict(
+                size=marker_size,
+                color=color,
+                colorscale=colorscale))])
+    fig.show()
 
 def make_gif(path_to_imgs, path_to_save, gifname, fps=20):
     filenames = [name for name in glob.glob(f'{path_to_imgs}/*.png')]
