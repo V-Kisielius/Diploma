@@ -8,7 +8,7 @@ from scripts.config import device
 
 IMG_SIZE = (50, 100)
 
-def map_to_cylinder(points):
+def map_to_cylinder(points): # REMOVE THIS FUNCTION. SEE IMAGEDATA
     return torch.stack((
         torch.cos(2*torch.pi*points[:, 1]),
         torch.sin(2*torch.pi*points[:, 1]),
@@ -46,7 +46,7 @@ class ExactGPModel(gpytorch.models.ExactGP):
                    "lengthscale": [],
                    "noise": []}
 
-        for _ in tqdm(range(num_iter), desc='Training'):
+        for _ in tqdm(range(num_iter), desc=f'Training on {device}'):
             optimizer.zero_grad()
             output = self(train_x)
             loss = -my_loss(output, train_y)
@@ -68,25 +68,23 @@ class ExactGPModel(gpytorch.models.ExactGP):
     def predict(self, data, num_samples=16, need_plot=True):
         self.eval()
         self.likelihood.eval()
-
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
-            sampled_preds = self(data.to(device)).rsample(
+            samples = self(data.to(device)).rsample(
                 sample_shape=torch.Size((num_samples,)))
-
+            samples = (samples - samples.min(dim=1)[0].unsqueeze(1)) / (
+                samples.max(dim=1)[0].unsqueeze(1) - samples.min(dim=1)[0].unsqueeze(1))
+            samples = 2 * samples.cpu().detach().view((-1, *IMG_SIZE)) - 1
         if need_plot:
             n = min(int(num_samples ** 0.5), 4)
             _, axs = plt.subplots(n, n, figsize=(20, 10))
             plt.suptitle(f'Samples')
             for i in range(n):
                 for j in range(n):
-                    axs[i, j].imshow(
-                        sampled_preds[i*n+j].cpu().detach().numpy().reshape(IMG_SIZE), cmap='PuOr')
-                    axs[i, j].contour(
-                        sampled_preds[i*n+j].cpu().detach().numpy().reshape(IMG_SIZE), levels=0, colors='k')
+                    axs[i, j].imshow(samples[i*n+j], cmap='PuOr')
+                    axs[i, j].contour(samples[i*n+j], levels=0, colors='k')
                     axs[i, j].axis('off')
             plt.show()
-
-        return sampled_preds
+        return samples
     
 def default_train(rbf_right=0.32, periodic_right=0.15, iters=100):
     # Train set and test set initialization
@@ -111,7 +109,5 @@ def default_train(rbf_right=0.32, periodic_right=0.15, iters=100):
     model = model.to(device)
     x_train = x_train.to(device)
     y_train = y_train.to(device)
-    
     model.start_training(x_train, y_train, num_iter=iters, need_plot=True)
-    
     return model, x_test

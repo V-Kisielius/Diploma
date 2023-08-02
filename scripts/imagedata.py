@@ -39,7 +39,7 @@ class ImageData:
             f'height: {self.height}\n'
             f'total_pixel: {self.total_pixel}\n'
             f'bound length: {self.bound_length}\n'
-            f'percent of bound pixels: {self.bound_length/self.total_pixel*100:.1f}%')
+            f'percent of bound pixels: {100 * self.bound_length / self.total_pixel:.1f}%')
 
     def show_image(self, figsize=(10, 5), cmap='gray'):
         plt.figure(figsize=figsize)
