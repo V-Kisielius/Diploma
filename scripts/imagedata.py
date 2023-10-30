@@ -23,16 +23,25 @@ class ImageData:
         self.mask = np.where(mask)[0]
         self.bound_mask = np.where(~mask)[0]
         self.bound_length = len(self.bound_mask)
-        self.data_3d = self.make_data()
+        self.data_2d, self.data_3d = self.make_data()
 
     def make_data(self):
-        roots = 2 * torch.pi * torch.arange(self.height) / self.height
+        # make grid with center in (0, 0) and shapes (2,1) in the form of [[x1, y1], [x2, y2], ...]
+        a = torch.linspace(-0.5, 0.5, self.width)
+        b = torch.linspace(-1, 1, self.height)
+        aa, bb = torch.meshgrid(a, b, indexing='ij')
+
+        data_2d = torch.stack([aa, bb], dim=2).view(-1, 2)
+
+
+        roots = 2 * torch.pi * torch.arange(self.height + 50) / (self.height + 50)
         zs = torch.linspace(1, -1, self.width)
-        z, y = torch.stack(torch.meshgrid(zs, roots, indexing='ij'), dim=2).view(-1, 2).T
+        z, y = torch.stack(torch.meshgrid(zs, roots[:-50], indexing='ij'), dim=2).view(-1, 2).T
         z = z * torch.pi * self.width / self.height
         x = torch.cos(y)
         y = torch.sin(y)
-        return self.radius * torch.stack((x, y, z), dim=1)
+        
+        return data_2d, self.radius * torch.stack((x, y, z), dim=1)
 
     def get_info(self):
         print(f'width: {self.width}\n'

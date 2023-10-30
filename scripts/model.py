@@ -11,17 +11,18 @@ from scripts.helper import plot_3d_tensor
 
 class Net(nn.Module):
     __slots__ = 'image_list'
-    def __init__(self, image_list, lr, weight_decay=1e-3):
+    def __init__(self, image_list, lr, mode='3d', arch=[3, 6, 12, 24, 1], weight_decay=1e-3):
         super(Net, self).__init__()
-        self.net = nn.Sequential(
-            nn.Linear(3, 6), nn.ELU(),
-            nn.Linear(6, 12), nn.ELU(),
-            nn.Linear(12, 24), nn.ELU(),
-            nn.Linear(24, 1), nn.Tanh()
-            )
+        self.net = nn.Sequential()
+        for i in range(len(arch)-1):
+            self.net.add_module(f'linear_{i}', nn.Linear(arch[i], arch[i+1]))
+            # self.net.add_module(f'elu_{i}' if i != len(arch)-2 else f'tanh_{i}',
+            #                     nn.ELU() if i != len(arch)-2 else nn.Tanh())
+            self.net.add_module(f'tanh_{i}', nn.Tanh())
+        self.arch = arch
         # self.weight = torch.nn.Parameter(torch.FloatTensor([1]), requires_grad=True)
         self.image_list = image_list
-        self.data_list = [img.data_3d for img in self.image_list]
+        self.data_list = [img.data_3d if mode == '3d' else img.data_2d for img in image_list]
         self.lr = lr
         self.weight_decay = weight_decay
         self.optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)

@@ -86,7 +86,7 @@ class ExactGPModel(gpytorch.models.ExactGP):
             plt.show()
         return samples
     
-def default_train(rbf_right=0.32, periodic_right=0.15, iters=100):
+def default_train(rbf_right=0.32, periodic_right=0.15, iters=100, need_plot=True):
     # Train set and test set initialization
     dx, dy = 1 / IMG_SIZE[0], 1 / IMG_SIZE[1]
     x, y = torch.linspace(0, 1-dx, IMG_SIZE[0]), torch.linspace(0, 1-dy, IMG_SIZE[1])
@@ -109,5 +109,5 @@ def default_train(rbf_right=0.32, periodic_right=0.15, iters=100):
     model = model.to(device)
     x_train = x_train.to(device)
     y_train = y_train.to(device)
-    model.start_training(x_train, y_train, num_iter=iters, need_plot=True)
+    model.start_training(x_train, y_train, num_iter=iters, need_plot=need_plot)
     return model, x_test
