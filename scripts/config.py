@@ -13,3 +13,5 @@ LOSSES = ['loss',
 PATH_TO_PM_DATA = './Kislovodsk/pm_format'
 PATH_TO_MARKUP_DATA = './Kislovodsk/CL_23.txt'
 PATH_TO_EPOCH_OUTS = './imgs/epoch_outs'
+PATH_TO_MCINTOSH = './imgs/fits/McIntosh'
+FITS_SHAPE = (256, 512)

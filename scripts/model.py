@@ -6,12 +6,13 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from IPython.display import clear_output
+
 from scripts.config import LOSSES, device, PATH_TO_EPOCH_OUTS
 from scripts.helper import plot_3d_tensor
 
 class Net(nn.Module):
     __slots__ = 'image_list'
-    def __init__(self, image_list, lr, mode='3d', arch=[3, 6, 12, 24, 1], weight_decay=1e-3):
+    def __init__(self, image_list, lr, mode='3d', arch=[3, 6, 12, 24, 12, 6, 3, 1], weight_decay=1e-3):
         super(Net, self).__init__()
         self.net = nn.Sequential()
         for i in range(len(arch)-1):
@@ -52,7 +53,23 @@ class Net(nn.Module):
                        colorscale=colorscale,
                        marker_size=marker_size)
 
-    def plot_on_train(self, output_list, epoch, need_save):
+    def start_training(self, num_epochs, need_plot, need_save, my_weight=1e-1, show_frequency=1e+2):
+        if need_save:
+            os.makedirs(PATH_TO_EPOCH_OUTS, exist_ok=True)
+        for value in self.loss_dict.values():
+            value.clear()
+        batch_list = [data.to(device) for data in self.data_list]
+        for epoch in range(1, int(num_epochs) + 1):
+            output_list = [self(batch) for batch in batch_list]
+            self.optimizer.zero_grad()
+            loss = self.compute_loss(output_list=output_list, my_weight=my_weight)
+            loss.backward(retain_graph=True)
+            self.optimizer.step()
+            if need_plot and (epoch % int(show_frequency) == 0 or epoch == num_epochs):
+                self._plot_on_train(output_list, epoch, need_save)
+                self.show_loss_items()
+
+    def _plot_on_train(self, output_list, epoch, need_save):
         output_list = [output.cpu().detach().view(img.img_array.shape)
                        for output, img in zip(output_list, self.image_list)]
         clear_output(wait=True)
@@ -76,22 +93,6 @@ class Net(nn.Module):
         if need_save:
             plt.savefig(PATH_TO_EPOCH_OUTS + '/epoch%06d.png' % epoch)
         plt.show()
-
-    def start_training(self, num_epochs, need_plot, need_save, my_weight=1e-1, show_frequency=1e+2):
-        if need_save:
-            os.makedirs(PATH_TO_EPOCH_OUTS, exist_ok=True)
-        for value in self.loss_dict.values():
-            value.clear()
-        batch_list = [data.to(device) for data in self.data_list]
-        for epoch in range(1, int(num_epochs) + 1):
-            output_list = [self(batch) for batch in batch_list]
-            self.optimizer.zero_grad()
-            loss = self.compute_loss(output_list=output_list, my_weight=my_weight)
-            loss.backward(retain_graph=True)
-            self.optimizer.step()
-            if need_plot and (epoch % int(show_frequency) == 0 or epoch == num_epochs):
-                self.plot_on_train(output_list, epoch, need_save)
-                self.show_loss_items()
 
     def pretrain(self, img_size, num_epochs):
         width, height = img_size
@@ -134,7 +135,7 @@ class Net(nn.Module):
                 original = torch.from_numpy(img.img_array).clone()
                 prediction = output.view(img.img_array.shape).clone()
 
-                mask = original < 255
+                mask = original < original.max()
                 original[mask] = 0
                 original[~mask] = 1
 
