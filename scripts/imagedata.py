@@ -9,6 +9,45 @@ from scripts.helper import open_img_as_array, plot_3d_tensor
 from scripts.config import FITS_SHAPE
 
 class ImageData:
+    """
+    Class for image data processing
+    
+    Parameters
+    ----------
+    path_or_img : str or np.array
+        Path to image or image itself in np.array format with shape (width, height)
+    data_mode : str
+        Type of data to process. Can be 'img', 'abz', 'path', 'fits'
+    radius : float
+        Radius of cylinder to project image on
+    reduce_factor : int
+        Reduce factor for image. It needs to reduce image size plotting 3d data if it is too large
+
+    Attributes
+    ----------
+    img_array : np.array
+        Image in np.array format
+    width : int
+        Width of image
+    height : int
+        Height of image
+    total_pixel : int
+        Total number of pixels in image
+    reduce_factor : int
+        Reduce factor for image
+    radius : float
+        Radius of cylinder to project image on
+    mask : np.array
+        Array of indices of pixels without filaments
+    bound_mask : np.array
+        Array of indices of pixels with filaments
+    bound_length : int
+        Number of pixels with filaments
+    data_2d : torch.Tensor
+        2d representation of image in coordinates (x, y)
+    data_3d : torch.Tensor
+        3d representation of image in coordinates (x, y, z)
+    """
     def __init__(self, path_or_img, data_mode, radius=1, reduce_factor=1):
         modes = {
             'img': lambda img: img,
@@ -62,10 +101,10 @@ class ImageData:
             f'bound length: {self.bound_length}\n'
             f'percent of bound pixels: {100 * self.bound_length / self.total_pixel:.1f}%')
 
-    def show_image(self, figsize=(10, 5), cmap='gray'):
+    def show_image(self, figsize=(10, 5), cmap='PuOr'):
         plt.figure(figsize=figsize)
         plt.title(f'Data visualization')
-        plt.imshow(self.img_array, cmap=cmap)
+        plt.imshow(self.img_array, cmap=cmap, vmin=-1, vmax=1)
 
     def show_3d(self, marker_size=2, colorscale='oxy'):
         plot_3d_tensor(tensor=self.data_3d,

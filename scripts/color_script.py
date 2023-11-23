@@ -40,6 +40,3 @@ def get_result(path):
                         flag += 1
                 color_and_check_neighbors(res, i, j, get_color(flag))
     return res, Image.fromarray(res.astype('uint8'))
-
-
-

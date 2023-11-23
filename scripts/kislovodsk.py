@@ -4,9 +4,30 @@ import matplotlib.pyplot as plt
 from scripts.config import PATH_TO_MARKUP_DATA, PATH_TO_PM_DATA
 
 class KislovodskMap():
-    r"""
+    """
     Class for working with synoptic maps from Kislovodsk.
-    Filaments - numpy array with 0 and 1, where 0 - filament, 1 - background
+    
+    Parameters
+    ----------
+    path_to_abz : str
+        Path to .abz file with synoptic map.
+
+    Attributes
+    ----------
+    map_number : int
+        Number of synoptic map.
+    path_to_abz : str
+        Path to .abz file with synoptic map.
+    filaments : numpy.ndarray
+        Array with filaments.
+    width : int
+        Width of synoptic map.
+    height : int
+        Height of synoptic map.
+    markup : numpy.ndarray
+        Array with markup.
+    pm : numpy.ndarray
+        Array with magnetic field sign distribution.
     """
     def __init__(self, path_to_abz):
         self.map_number = int(path_to_abz[-11:-7])
