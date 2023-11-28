@@ -1,7 +1,7 @@
 __pycache__/
 scripts/__pycache__/
 imgs/fits/
-Tests/Fits/Mean/
 .venv
 .vscode
 progress.txt
+Tests/Fits/Mean/
