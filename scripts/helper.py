@@ -5,6 +5,7 @@ import torch
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+from typing import Union, Optional
 
 
 def open_img_as_array(path_to_img: str) -> np.ndarray:
@@ -12,8 +13,8 @@ def open_img_as_array(path_to_img: str) -> np.ndarray:
     return np.array(ImageOps.grayscale(Image.open(path_to_img))).astype(int)
 
 def plot_3d_tensor(
-        tensor: torch.Tensor | np.ndarray,
-        color: torch.Tensor | np.ndarray | None = None,
+        tensor: Union[torch.Tensor, np.ndarray],
+        color: Optional[Union[torch.Tensor, np.ndarray]] = None,
         colorscale: str = 'PuOr',
         marker_size: float = 2) -> None:
     """
@@ -104,5 +105,4 @@ def prepare_gpr_results(img, p, need_plot=False):
         plt.subplot(1, 3, 3)
         plt.imshow(splitted, cmap='gray')
         plt.title('Splitted')
-
     return original, sign, splitted

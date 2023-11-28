@@ -7,4 +7,5 @@ matplotlib
 imageio
 plotly_express
 gpytorch
-seaborn
+scikit-image
+astropy

@@ -6,7 +6,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from IPython.display import clear_output
-from typing import List
+from typing import List, Tuple, Optional
 
 from scripts.config import LOSSES, device
 from scripts.helper import plot_3d_tensor
@@ -63,7 +63,7 @@ class NeutralLiner(nn.Module):
             self,
             image_list: List[ImageData],
             lr: float,
-            help_step_size: int | None,
+            help_step_size: Optional[int] = None,
             mode: str = '3d',
             arch: List[int] = [3, 6, 12, 24, 12, 6, 3, 1],
             weight_decay: float = 1e-3
@@ -160,7 +160,7 @@ class NeutralLiner(nn.Module):
             self,
             num_epochs: int,
             need_plot: bool,
-            path_to_save: str | None = None,
+            path_to_save: Optional[str] = None,
             my_weight: float = 1e-1,
             show_frequency: int = 100
             ):
@@ -229,9 +229,9 @@ class NeutralLiner(nn.Module):
         plt.show()
 
     def test_model(self,
-                   input_list: List[torch.Tensor] | None = None,
+                   input_list: Optional[List[torch.Tensor]] = None,
                    need_plot: bool = True,
-                   full_path_to_save: str | None = None
+                   full_path_to_save: Optional[str] = None
                    ) -> List[torch.Tensor]:
         """
         Tests the model on a specified list of inputs. If no list is provided, the model is tested on the data it was trained on.
@@ -266,7 +266,7 @@ class NeutralLiner(nn.Module):
                     plt.title('Target image')
                     plt.imshow(img.target_img, cmap='PuOr', vmin=-1, vmax=1)
                 plt.tight_layout()
-                if full_path_to_save:
+                if full_path_to_save is not None:
                     os.makedirs('/'.join(full_path_to_save.split('/')[:-1]), exist_ok=True)
                     plt.savefig(full_path_to_save, bbox_inches='tight', pad_inches=0, facecolor='white')
                 if need_plot:
@@ -284,7 +284,7 @@ class NeutralLiner(nn.Module):
             mse = torch.nn.functional.mse_loss(prediction, original)
         return mse
 
-    def compute_and_plot_gradient(self, input_list: List[torch.Tensor] | None = None) -> (List[torch.Tensor], List[torch.Tensor]):
+    def compute_and_plot_gradient(self, input_list: Optional[List[torch.Tensor]] = None) -> Tuple[List[torch.Tensor], List[torch.Tensor]]:
         """
         Computes and plots the gradient map for the specified list of inputs.
         If no list is provided, the gradient map is computed for the data the model was trained on.
@@ -349,7 +349,7 @@ class NeutralLiner(nn.Module):
             f_abs_integral = f_abs_integral_ + 1 - output[img.mask].abs().sum() / (img.total_pixel - img.bound_length) # хочу НЕ границу +-1
             bound_integral = bound_integral_ + output[img.bound_mask].pow(2).sum() / img.bound_length # хочу на границе 0
             loss = loss_ + f_abs_integral + bound_integral + orientation_integral + f_integral
-            if self.help_step_size:
+            if self.help_step_size is not None:
                 # 20 have to depend on the size of the image
                 MSE_help = MSE_help_ + nn.functional.mse_loss(
                     output.view(img.img_array.shape)[20:-20, :][::self.help_step_size, ::self.help_step_size],
