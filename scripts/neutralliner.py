@@ -41,7 +41,7 @@ class NeutralLiner(nn.Module):
     ----------
     net : nn.Sequential
         Neural network architecture.
-    arch : List[int]
+    arch : Tuple[int]
         Architecture of the network (number of neurons in each layer).
     image_list : List[ImageData]
         List of ImageData objects.
@@ -65,7 +65,7 @@ class NeutralLiner(nn.Module):
             lr: float,
             help_step_size: Optional[int] = None,
             mode: str = '3d',
-            arch: List[int] = [3, 6, 12, 24, 12, 6, 3, 1],
+            arch: Tuple[int] = (3, 6, 12, 24, 12, 6, 3, 1),
             weight_decay: float = 1e-3
         ):
         super(NeutralLiner, self).__init__()
