@@ -5,4 +5,4 @@ state_dict/
 .venv
 .vscode
 progress.txt
-Tests/Fits/Mean/
+Tests/
