@@ -6,3 +6,4 @@ state_dict/
 .vscode
 progress.txt
 Tests/
+infodict.json
