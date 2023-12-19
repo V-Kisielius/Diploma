@@ -130,13 +130,12 @@ class NeutralLiner(nn.Module):
         os.makedirs('/'.join(path.split('/')[:-1]), exist_ok=True)
         torch.save(self.state_dict(), path)
 
-    def show_3d(
-            self,
-            prediction_list: List[torch.Tensor], 
-            map_number: int = 0,
-            marker_size: float = 2,
-            colorscale: str = 'PuOr'
-            ) -> None:
+    def show_3d(self,
+                prediction_list: List[torch.Tensor],
+                map_number: int = 0,
+                marker_size: float = 2,
+                colorscale: str = 'PuOr'
+                ) -> None:
         """
         Plots the 3d map of the prediction in 3d.
 
@@ -160,10 +159,11 @@ class NeutralLiner(nn.Module):
             self,
             num_epochs: int,
             need_plot: bool,
+            clear_loss: bool = True,
             path_to_save: Optional[str] = None,
-            my_weight: float = 1e-1,
+            f_integral_weight: float = 1e-1,
             show_frequency: int = 100
-            ):
+            ) -> None:
         """
         Trains the model for a specified number of epochs.
 
@@ -175,20 +175,21 @@ class NeutralLiner(nn.Module):
             Indicates whether to plot the results after each epoch.
         path_to_save : str | None
             Path to the directory to save the plots on train to.
-        my_weight : float
-            Weight of the f integral loss.
+        f_integral_weight : float
+            Weight of the term with the integral of the function f over cylinder.
         show_frequency : int
             Frequency with which to plot the results.
         """
         if path_to_save:
             os.makedirs(path_to_save, exist_ok=True)
-        for value in self.loss_dict.values():
-            value.clear()
+        if clear_loss:
+            for value in self.loss_dict.values():
+                value.clear()
         data_list = [data.to(device) for data in self.data_list]
         for epoch in range(1, num_epochs + 1):
             output_list = [self(data) for data in data_list]
             self.optimizer.zero_grad()
-            loss = self.compute_loss(output_list=output_list, my_weight=my_weight)
+            loss = self.compute_loss(output_list=output_list, f_integral_weight=f_integral_weight)
             loss.backward(retain_graph=True)
             self.optimizer.step()
             if need_plot and (epoch % show_frequency == 0 or epoch == num_epochs):
@@ -324,7 +325,11 @@ class NeutralLiner(nn.Module):
             plt.plot(value)
         plt.show()
 
-    def compute_loss(self, output_list: List[torch.Tensor], my_weight: float) -> torch.Tensor:
+    def compute_loss(self, 
+                     output_list: List[torch.Tensor],
+                     f_integral_weight: float,
+                     help_size: int = 20
+                     ) -> torch.Tensor:
         """
         Computes the loss for the specified list of outputs.
 
@@ -332,30 +337,30 @@ class NeutralLiner(nn.Module):
         ----------
         output_list : List[torch.Tensor]
             List of output tensors of the model.
-        my_weight : float
-            Weight of the f integral loss.
+        f_integral_weight : float
+            Weight of the term with the integral of the function f over cylinder.
+        help_size : int
+            Size of the margin in pixels for the help loss region.
         """
         loss, f_abs_integral, bound_integral, orientation_integral, f_integral, MSE_help = torch.zeros(len(self.loss_dict))
         loss_, f_abs_integral_, bound_integral_, orientation_integral_, f_integral_, MSE_help_ = torch.zeros(len(self.loss_dict))
         for (output, img) in zip(output_list, self.image_list):
             output = output.flatten()
-            rows = int(0.05 * img.height)
             for key in self.loss_dict.keys():
                 locals()[key + "_"] = locals()[key].clone()
-            upper_bound = (output[:rows].sum() / len(output[:rows]) - 1).abs()
-            lower_bound = (output[-rows:].sum() / len(output[-rows:]) + 1).abs()
-            f_integral = f_integral_ + my_weight * output.sum().abs() / img.total_pixel
+            rows = int(img.width / 18) * img.height
+            upper_bound = (output[:rows].mean() - 1).abs()
+            lower_bound = (output[-rows:].mean() + 1).abs()
             orientation_integral = orientation_integral_ + 0.25 * (upper_bound + lower_bound)
-            f_abs_integral = f_abs_integral_ + 1 - output[img.mask].abs().sum() / (img.total_pixel - img.bound_length) # хочу НЕ границу +-1
-            bound_integral = bound_integral_ + output[img.bound_mask].pow(2).sum() / img.bound_length # хочу на границе 0
+            f_integral = f_integral_ + f_integral_weight * output.mean().abs()
+            f_abs_integral = f_abs_integral_ + 1 - output[img.mask].abs().mean() # +-1 for region without filaments
+            bound_integral = bound_integral_ + output[img.bound_mask].pow(2).mean() # 0 for region with filaments
             loss = loss_ + f_abs_integral + bound_integral + orientation_integral + f_integral
             if self.help_step_size is not None:
-                # 20 have to depend on the size of the image
                 MSE_help = MSE_help_ + nn.functional.mse_loss(
-                    output.view(img.img_array.shape)[20:-20, :][::self.help_step_size, ::self.help_step_size],
-                    torch.FloatTensor(img.target_img[20:-20, :]).to(device)[::self.help_step_size, ::self.help_step_size])
+                    output.view(img.img_array.shape)[help_size:-help_size, :][::self.help_step_size, ::self.help_step_size],
+                    torch.FloatTensor(img.target_img[help_size:-help_size, :]).to(device)[::self.help_step_size, ::self.help_step_size])
                 loss += MSE_help
-                
         for key in self.loss_dict.keys():
             self.loss_dict[key].append(locals()[key].item())
         return loss
